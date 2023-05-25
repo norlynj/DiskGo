@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/disk-scheduling-simulator.iml" filepath="$PROJECT_DIR$/disk-scheduling-simulator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DiskGo.iml" filepath="$PROJECT_DIR$/DiskGo.iml" />
     </modules>
   </component>
 </project>

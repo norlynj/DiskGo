@@ -1,8 +1,8 @@
-import view.Alloc8r;
+import view.DiskGo;
 
 public class Main {
     public static void main(String[] args) {
-        new Alloc8r();
+        new DiskGo();
 //        System.exit(0);
     }
 }

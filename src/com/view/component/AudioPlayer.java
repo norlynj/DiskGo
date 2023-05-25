@@ -1,4 +1,4 @@
-package com.view.component;
+package view.component;
 
 import javax.sound.sampled.*;
 import java.io.IOException;

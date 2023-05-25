@@ -1,6 +1,7 @@
-package com.view.component;
+package view.component;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,8 +26,13 @@ public class ImageButton extends JButton {
         setBackground(new Color(0, 0, 0, 0));
         setOpaque(false);
         this.setIcon(imageName);
-        setVisible(true);
         setFocusable(false);
+        setUI(new BasicButtonUI() {
+            @Override
+            protected void paintButtonPressed(Graphics g, AbstractButton button) {
+                // Do not paint any highlighting effect
+            }
+        });
 
         addActionListener(e -> {
             new AudioPlayer("click.wav").play(); //click sound

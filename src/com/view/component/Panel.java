@@ -1,4 +1,4 @@
-package com.view.component;
+package view.component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +41,7 @@ public class Panel extends JPanel {
 
     //allows one to add a bg image to the panel
     public void setImage(String imageName) {
-        background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/images/" + imageName)));
+        background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/" + imageName)));
         repaint();
     }
 }

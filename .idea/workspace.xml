@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="4288015a-f78a-49c3-8c4c-2b2cd15a3886" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DiskGo.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/view/Export.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/view/FileReader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/view/component/CustomTable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/view/component/CustomTableModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/view/component/HighlightCellRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/disk-scheduling-simulator.iml" beforeDir="false" afterPath="$PROJECT_DIR$/disk-scheduling-simulator.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/model/CustomTableModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/model/samplemodel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/Alloc8r.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/DiskGo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/HowPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/HowPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/InputDecisionPanel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/InputPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/InputPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/MenuPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/MenuPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/OutputPanel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/component/AudioPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/component/AudioPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/component/Button.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/component/Button.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/component/Frame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/component/Frame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/component/ImageButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/component/ImageButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/component/Label.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/component/Label.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/view/component/Panel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/view/component/Panel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +51,10 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/moriarty/Desktop/DiskGo",
+    "jdk.selected.JAVA_MODULE": "17",
+    "last_opened_file_path": "/home/moriarty/Downloads/paginate_src/paginate/src/lib/pdfbox.jar",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
@@ -36,6 +63,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/com/view" />
+      <recent name="$PROJECT_DIR$/src/com/view/component" />
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
