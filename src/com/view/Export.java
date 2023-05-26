@@ -11,13 +11,86 @@ import view.component.CustomTable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Export {
+
+    private void saveResults(JPanel panel) {
+        String[] fileFormats = {"PDF", "JPEG"};
+        JComboBox<String> formatComboBox = new JComboBox<>(fileFormats);
+
+        int result = JOptionPane.showOptionDialog(null, formatComboBox, "Save As", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String selectedFormat = (String) formatComboBox.getSelectedItem();
+
+            JFileChooser fileChooser = new JFileChooser();
+            FileNameExtensionFilter filter = null;
+            String defaultExtension = null;
+
+            if (selectedFormat.equals("PDF")) {
+                filter = new FileNameExtensionFilter("PDF Files", "pdf");
+                defaultExtension = "pdf";
+            } else if (selectedFormat.equals("JPEG")) {
+                filter = new FileNameExtensionFilter("JPEG Files", "jpg", "jpeg");
+                defaultExtension = "jpg";
+            }
+
+            fileChooser.setFileFilter(filter);
+            fileChooser.setApproveButtonText("Save");
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+            // Generate the file name using the desired format
+            String formattedDate = new SimpleDateFormat("MMddyy_HHmmss").format(new Date());
+            String fileName = String.format("%s_PG.%s", formattedDate, defaultExtension);
+            fileChooser.setSelectedFile(new File(fileName));
+
+            int option = fileChooser.showSaveDialog(null);
+
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                String extension = getFileExtension(file);
+
+                switch (selectedFormat) {
+                    case "PDF":
+                        if (!extension.equalsIgnoreCase("pdf")) {
+                            file = new File(file.getAbsolutePath() + ".pdf");
+                        }
+
+//                        String[] labelStrings = Arrays.stream(titleLabels)
+//                                .map(JLabel::getText)
+//                                .toArray(String[]::new);
+//                        new Export().saveAsPDF(tables, labelStrings, file);
+                        break;
+                    case "JPEG":
+                        if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
+                            file = new File(file.getAbsolutePath() + ".jpg");
+                        }
+                        new Export().saveAsJPEG(panel, file);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    private String getFileExtension(File file) {
+        String extension = "";
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+            extension = fileName.substring(dotIndex + 1).toLowerCase();
+        }
+        return extension;
+    }
     public void saveAsPDF(CustomTable[] tables, String[] tableTitles, File file) {
         try {
             PDDocument document = new PDDocument();
