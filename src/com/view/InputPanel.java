@@ -222,6 +222,7 @@ public class InputPanel extends Panel {
                             invalidate(true);
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
+                            validHead = true;
                         }
                     } else if(input.getName().equals("requestQueueField")) {
                         // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 0-40, string value must be between 0-199
@@ -241,6 +242,7 @@ public class InputPanel extends Panel {
                                         invalidate(false);
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
+                                        validQueue = true;
                                     }
                                 }
                             } else {
