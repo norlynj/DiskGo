@@ -5,13 +5,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FileReader {
 
-    private ArrayList<Integer> pageRefString;
-    int frameNumber;
+    private int[] queue;
+    private int headStartsAt;
 
     public boolean readInputFromFile() throws FileNotFoundException {
         String resourcePath = "/resources/text/";
@@ -30,43 +29,40 @@ public class FileReader {
             File inputFile = fileChooser.getSelectedFile();
 
             try {
-                ArrayList<Integer> inputList = new ArrayList<>();
                 Scanner scanner = new Scanner(inputFile);
 
                 // Read page reference string
-                String pageReferenceStringLine = scanner.nextLine();
-                String[] pageReferenceStringArray = pageReferenceStringLine.split(": ")[1].split(", ");
-                if (pageReferenceStringArray.length < 10 || pageReferenceStringArray.length > 40) {
+                String requestQueueLine = scanner.nextLine();
+                String[] requestQueue = requestQueueLine.split(": ")[1].split(", ");
+                if (requestQueue.length <= 0 || requestQueue.length > 200) {
                     invalid = true;
                 }
-                for (String pageReferenceString : pageReferenceStringArray) {
-                    int value = Integer.parseInt(pageReferenceString);
-                    if (value < 0 || value > 20) {
+                queue = new int[requestQueue.length];
+                for (int i = 0; i < requestQueue.length; i++) {
+                    int value = Integer.parseInt(requestQueue[i].trim());
+                    if (value < 0 || value > 199) {
                         invalid = true;
                     }
-                    inputList.add(value);
+                    queue[i] = value;
                 }
 
-
-                // Read number of frames
-                String numberOfFramesLine = scanner.nextLine();
-                int numberOfFrames = Integer.parseInt(numberOfFramesLine.split(": ")[1]);
-                if (numberOfFrames < 3 || numberOfFrames > 10) {
+                // Read head starting position
+                String headStartsAtLine = scanner.nextLine();
+                headStartsAt = Integer.parseInt(headStartsAtLine.split(": ")[1]);
+                if (headStartsAt < 0 || headStartsAt > 199) {
                     invalid = true;
                 }
 
                 scanner.close();
 
-                this.pageRefString = inputList;
-                this.frameNumber = numberOfFrames;
-
-            } catch (FileNotFoundException | ArrayIndexOutOfBoundsException ex) {
+            } catch (FileNotFoundException | ArrayIndexOutOfBoundsException | NumberFormatException ex) {
                 System.out.println("Error reading the file");
                 return false;
             }
         } else {
             return false;
         }
+
         if (invalid) {
             JOptionPane.showMessageDialog(null, "Please recheck inputs to follow the defined bounds");
             return false;
@@ -74,11 +70,11 @@ public class FileReader {
         return true;
     }
 
-    public ArrayList getPageRefString() {
-        return pageRefString;
+    public int[] getQueue() {
+        return queue;
     }
 
-    public int getFrameNumber() {
-        return frameNumber;
+    public int getHeadStartsAt() {
+        return headStartsAt;
     }
 }

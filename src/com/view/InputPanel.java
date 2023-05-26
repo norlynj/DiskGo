@@ -153,7 +153,11 @@ public class InputPanel extends Panel {
             FileReader fr = new FileReader();
             try {
                 if (fr.readInputFromFile()) {
+                    diskScheduler.setHead(fr.getHeadStartsAt());
+                    diskScheduler.setRequestQueue(fr.getQueue());
 
+                    requestQueueField.setText(diskScheduler.getQueueAsString());
+                    headField.setText(String.valueOf(diskScheduler.getHead()));
                 }
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
