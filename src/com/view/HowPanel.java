@@ -7,7 +7,7 @@ import view.component.Panel;
 public class HowPanel extends Panel{
 
     private ImageButton musicOnButton, musicOffButton, homeButton, defButton, termsButton,
-                        choicesButton, formatButton, backButton, inputButton, outputButton;
+            choicesButton, formatButton, backButton, inputButton, outputButton;
     public HowPanel() {
 
         super("bg/how-1.png");
@@ -15,7 +15,7 @@ public class HowPanel extends Panel{
         musicOnButton = new ImageButton("buttons/volume-on.png");
         musicOffButton = new ImageButton("buttons/volume-off.png");
         homeButton = new ImageButton("buttons/home.png");
-        defButton = new ImageButton("buttons/definition.png");
+        defButton = new ImageButton("buttons/def.png");
         termsButton = new ImageButton("buttons/terms.png");
         choicesButton = new ImageButton("buttons/choices.png");
         formatButton = new ImageButton("buttons/format.png");
@@ -29,7 +29,7 @@ public class HowPanel extends Panel{
         defButton.setBounds(55, 157, 401, 40);
         termsButton.setBounds(463, 157, 121, 40);
         formatButton.setBounds(881, 405, 121, 40);
-        backButton.setBounds(113, 277, 47, 47);
+        backButton.setBounds(352, 220, 47, 47);
         inputButton.setBounds(591,157, 121, 40);
         outputButton.setBounds(719,157, 121, 40);
 
@@ -57,7 +57,7 @@ public class HowPanel extends Panel{
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
         musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");
         homeButton.hover("buttons/home-hover.png", "buttons/home.png");
-        defButton.hover("buttons/definition-hover.png", "buttons/definition.png");
+        defButton.hover("buttons/def-hover.png", "buttons/def.png");
         termsButton.hover("buttons/terms-hover.png", "buttons/terms.png");
         formatButton.hover("buttons/format-hover.png", "buttons/format.png");
         backButton.hover("buttons/back-hover.png", "buttons/back.png");
