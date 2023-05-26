@@ -1,5 +1,6 @@
 package view;
 
+import model.*;
 import view.component.*;
 import view.component.Frame;
 import view.component.Label;
@@ -27,15 +28,17 @@ public class InputPanel extends Panel {
     Color bgColor = new Color(248, 241, 226);
     private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20, FRAME_SIZE_MIN = 3, FRAME_SIZE_MAX = 10;
     private ImageButton musicOnButton, musicOffButton, homeButton;
-    private JComboBox algorithmChoice;
-    private ImageButton frameNumPlus, frameNumMinus;
-    private JTextField requestQueueField, headField;
+    private CustomDropDown algorithmChoice;
     private ImageButton importButton, randomizeButton, runButton, pauseButton, saveButton;
+    private JTextField requestQueueField, headField;
     private JSlider slider;
-    private JLabel timerLabel;
+    private JLabel timerLabel, totalSeekTimeLabel;
+    private DiskScheduler diskScheduler;
+    private boolean validQueue = false, validHead = false;
 
     public InputPanel() {
         super("bg/input-panel.png");
+        diskScheduler = new FCFS();
         initializeButtons();
         initializeAlgorithmComboBox();
         initializeTextFields();
@@ -48,11 +51,9 @@ public class InputPanel extends Panel {
 
     private void initializeButtons() {
         musicOnButton = createImageButton("buttons/volume-on.png", 956, 35, 47, 47);
-        musicOffButton = createImageButton("buttons/volume-off.png", 956, 25, 47, 47);
+        musicOffButton = createImageButton("buttons/volume-off.png", 956, 35, 47, 47);
         homeButton = createImageButton("buttons/home.png", 1017, 35, 47, 47);
         musicOffButton.setVisible(false);
-        frameNumPlus = createImageButton("buttons/add.png", 469, 212, 44, 40);
-        frameNumMinus = createImageButton("buttons/minus.png", 354, 212, 44, 40);
         importButton = createImageButton("buttons/from-text.png", 18, 129, 58, 58);
         randomizeButton = createImageButton("buttons/randomize.png", 31, 209, 58, 58);
         runButton = createImageButton("buttons/run.png", 1013, 141, 58, 58);
@@ -68,17 +69,13 @@ public class InputPanel extends Panel {
     }
 
     private void initializeAlgorithmComboBox() {
-        algorithmChoice = new JComboBox(new String[]{"Simulate all", "FIFO", "LRU", "Optimal", "Second Chance(SC)", "Enhanced SC", "LFU", "MFU"});
-        algorithmChoice.setRenderer(new CustomComboBoxRenderer());
-        algorithmChoice.setBackground(new Color(77,58,104));
-        algorithmChoice.setForeground(Color.white);
-        algorithmChoice.setFont(new Font("Montserrat", Font.BOLD, 18));
+        algorithmChoice = new CustomDropDown(new String[]{"FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"});
         algorithmChoice.setBounds(218, 133, 150, 44);
     }
 
     private void initializeTextFields() {
         requestQueueField = createTextField("", 2, "requestQueueField", 218, 85, 664, 40);
-        headField = createTextField("4", 2, "headField", 734, 136, 148, 41);
+        headField = createTextField("", 2, "headField", 734, 136, 148, 41);
     }
 
     private JTextField createTextField(String text, int columns, String name, int x, int y, int width, int height) {
@@ -93,7 +90,10 @@ public class InputPanel extends Panel {
     }
 
     private void initializeLabels() {
-
+        timerLabel = new Label("00:00");
+        timerLabel.setBounds(325, 205, 93, 32);
+        totalSeekTimeLabel = new Label("0");
+        totalSeekTimeLabel.setBounds(427, 255, 93, 32);
     }
 
     private void initializeTables() {
@@ -117,22 +117,11 @@ public class InputPanel extends Panel {
     }
 
 
-    private void enableOutputButtons() {
-        runButton.setEnabled(true);
-        saveButton.setEnabled(true);
-    }
-    private void disableOutputButtons() {
-        runButton.setEnabled(false);
-        saveButton.setEnabled(false);
-    }
-
     private void setListeners() {
         //hover state
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
         musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");
         homeButton.hover("buttons/home-hover.png", "buttons/home.png");
-        frameNumMinus.hover("buttons/minus-hover.png", "buttons/minus.png");
-        frameNumPlus.hover("buttons/add-hover.png", "buttons/add.png");
         importButton.hover("buttons/from-text-hover.png", "buttons/from-text.png");
         randomizeButton.hover("buttons/randomize-hover.png", "buttons/randomize.png");
         runButton.hover("buttons/run-hover.png", "buttons/run.png");
@@ -149,24 +138,15 @@ public class InputPanel extends Panel {
             // Handle music off button click
         });
 
-        frameNumPlus.addActionListener(e -> {
-            try {
-                headField.setText(String.valueOf(Integer.parseInt(headField.getText()) + 1));
-            } catch (NumberFormatException ex) {
-                headField.setText("4");
-            }
-        });
-
-        frameNumMinus.addActionListener(e -> {
-            try {
-                headField.setText(String.valueOf(Integer.parseInt(headField.getText()) - 1));
-            } catch (NumberFormatException ex) {
-                headField.setText("4");
-            }
-        });
-
         algorithmChoice.addActionListener(e -> {
-
+            switch ((String) Objects.requireNonNull(algorithmChoice.getSelectedItem())) {
+                case "FCFS" -> diskScheduler = new FCFS();
+                case "SSTF" -> diskScheduler = new SSTF();
+                case "SCAN" -> diskScheduler = new SCAN();
+                case "CSCAN" -> diskScheduler = new CSCAN();
+                case "LOOK" -> diskScheduler = new LOOK();
+                case "CLOOK" -> diskScheduler = new CLOOK();
+            }
         });
 
         importButton.addActionListener(e -> {
@@ -181,23 +161,33 @@ public class InputPanel extends Panel {
         });
 
         randomizeButton.addActionListener(e -> {
-
+            diskScheduler.randomizeQueue();
+            diskScheduler.getRandomizeHead();
+            requestQueueField.setText(diskScheduler.getQueueAsString());
+            headField.setText(String.valueOf(diskScheduler.getHead()));
         });
 
         runButton.addActionListener(e -> {
-
-            pauseButton.setVisible(true);
-            runButton.setVisible(false);
+            if (validHead && validQueue) {
+                pauseButton.setVisible(true);
+                runButton.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(null, "Cannot run the program. Input is invalid.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         pauseButton.addActionListener(e -> {
-
+            runButton.setVisible(true);
+            pauseButton.setVisible(false);
         });
 
         saveButton.addActionListener(e -> {
+            if (validHead && validQueue) {
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet ran", "No results yet", JOptionPane.ERROR_MESSAGE);
+            }
         });
-
-
 
         inputValidator(requestQueueField);
         inputValidator(headField);
@@ -219,7 +209,54 @@ public class InputPanel extends Panel {
             }
 
             private void validateInput() {
-
+                try {
+                    String str = input.getText();
+                    if (input.getName().equals("headField")) {
+                        int value = Integer.parseInt(str);
+                        if (value < 0 || value > diskScheduler.getCylinder() - 1) {
+                            // If the value is out of range, highlight the text field
+                            invalidate(true);
+                        } else {
+                            input.setBackground(UIManager.getColor("TextField.background"));
+                        }
+                    } else if(input.getName().equals("requestQueueField")) {
+                        // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 0-40, string value must be between 0-199
+                        if (str.matches("\\d+(,\\s\\d+)*")) {
+                            String[] parts = str.split(",\\s");
+                            if (parts.length >= 0 &&
+                                    parts.length <= 40 &&
+                                    parts[0].matches("\\d+") &&
+                                    parts[parts.length-1].matches("\\d+")) {
+                                // Split the input into an array of integers
+                                String[] nums = str.split(",\\s");
+                                ArrayList<Integer> numList = new ArrayList<>();
+                                for (String num : nums) {
+                                    int value = Integer.parseInt(num);
+                                    // Check that each integer value in the input is between 0 and 199
+                                    if (value < 0 || value > diskScheduler.getCylinder() - 1) {
+                                        invalidate(false);
+                                    } else {
+                                        input.setBackground(UIManager.getColor("TextField.background"));
+                                    }
+                                }
+                            } else {
+                                invalidate(false);
+                            }
+                        } else {
+                            invalidate(false);
+                        }
+                    }
+                } catch (NumberFormatException ex) {
+                    invalidate(false);
+                }
+            }
+            private void invalidate(boolean head) {
+                input.setBackground(new Color(255, 202, 202));
+                if (head) {
+                    validHead = false;
+                } else {
+                    validQueue = false;
+                }
             }
         });
     }
@@ -227,23 +264,14 @@ public class InputPanel extends Panel {
     private void initializeSlider() {
         // slider and timer
         slider = new JSlider();
-        slider.setMajorTickSpacing(25);
-        slider.setMinorTickSpacing(10);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-        Hashtable position = new Hashtable();
-        position.put(0, new JLabel("0s"));
-        position.put(25, new JLabel("1s"));
-        position.put(50, new JLabel("2s"));
-        position.put(75, new JLabel("3s"));
-        position.put(100, new JLabel("4s"));
-        slider.setLabelTable(position);
-        slider.setBackground(new Color(231, 205, 194));
-        slider.setBounds(426, 200, 246, 45);
+        slider.setUI(new CircleSliderUI(slider));
+        slider.setBounds(420, 209, 246, 21);
     }
 
     private void addComponentsToFrame() {
         this.add(slider);
+        this.add(timerLabel);
+        this.add(totalSeekTimeLabel);
         this.add(musicOnButton);
         this.add(musicOffButton);
         this.add(homeButton);
@@ -257,22 +285,7 @@ public class InputPanel extends Panel {
         this.add(saveButton);
     }
 
-    private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            setHorizontalAlignment(SwingConstants.CENTER);
-            if (isSelected) {
-                setBackground(new Color(232, 160, 221)); // set selected item background color
-                setForeground(new Color(77,58,104)); // set item text color
-            } else {
-                setBackground(new Color(77,58,104)); // set unselected item background color
-                setForeground(Color.WHITE); // set item text color
-            }
-            setFont(new Font("Montserrat", Font.BOLD, 14));
-            return this;
-        }
-    }
+
 
     private void saveResults(JPanel panel) {
         String[] fileFormats = {"PDF", "JPEG"};
@@ -350,6 +363,7 @@ public class InputPanel extends Panel {
 
 
     public static void main(String[] args) {
+
         InputPanel m = new InputPanel();
         Frame frame = new Frame("Input Panel");
         frame.add(m);
