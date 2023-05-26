@@ -15,6 +15,11 @@ public class CircleSliderUI extends BasicSliderUI {
         this.borderColor = borderColor;
         slider.setBackground(new Color(231, 205, 194));
         slider.setFocusable(false); // Disable focus painting
+
+        slider.setMinimum(0);
+        slider.setMaximum(5000);
+        slider.setInverted(true);
+
     }
 
     protected Dimension getThumbSize() {
