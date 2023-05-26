@@ -13,12 +13,12 @@ public class SeekTimeGraph extends JPanel {
     private int[] queue;
     private int cylinders;
     private int currentIndex;  // Current index to track the progress of simulation
-    private Timer timer;  // Timer to control the drawing interval
-    private int delay = 500;  // Delay between each update in milliseconds
+    public Timer timer;  // Timer to control the drawing interval
 
-    public void simulateGraph() {
+    public void simulateGraph(int delay, InputPanel panel) {
         currentIndex = 0;  // Reset the current index
         timer = new Timer(delay, new ActionListener() {
+            long startTime = System.currentTimeMillis();
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Increment the current index
@@ -27,14 +27,29 @@ public class SeekTimeGraph extends JPanel {
                 // Repaint the graph to update the drawing
                 repaint();
 
+                long elapsedTime = System.currentTimeMillis() - startTime;
+                long seconds = (elapsedTime / 1000) % 60;
+                String time = String.format("%02d:%02d", seconds / 60, seconds % 60);
+                panel.getTimerLabel().setText(time);
+
                 // Check if the simulation has reached the end
                 if (currentIndex >= queue.length) {
                     timer.stop();
+                    panel.getRunButton().setVisible(true);
+                    panel.getPauseButton().setVisible(false);
                 }
             }
         });
 
         timer.start();  // Start the timer
+    }
+
+    public void stopSimulation(InputPanel panel) {
+        if (timer != null && timer.isRunning()) {
+            timer.stop();
+            panel.getRunButton().setVisible(true);
+            panel.getPauseButton().setVisible(false);
+        }
     }
     public SeekTimeGraph() {
     }

@@ -193,13 +193,17 @@ public class InputPanel extends Panel {
                 graph.setInitialPointer(diskScheduler.getHead());
                 graph.setCylinders(diskScheduler.getCylinder());
                 graph.setQueue(diskScheduler.simulate());
-                graph.simulateGraph();
+                graph.simulateGraph(slider.getValue(), this);
+                if (!graph.timer.isRunning()) {
+
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot run the program. Input is invalid.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         pauseButton.addActionListener(e -> {
+            graph.stopSimulation(this);
             runButton.setVisible(true);
             pauseButton.setVisible(false);
         });
@@ -346,5 +350,17 @@ public class InputPanel extends Panel {
     }
     public ImageButton getHomeButton() {
         return homeButton;
+    }
+
+    public ImageButton getRunButton() {
+        return runButton;
+    }
+
+    public ImageButton getPauseButton() {
+        return pauseButton;
+    }
+
+    public JLabel getTimerLabel() {
+        return timerLabel;
     }
 }
