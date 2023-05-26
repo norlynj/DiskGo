@@ -39,8 +39,8 @@ public class MenuPanel extends Panel{
         helpHover.setBounds(754, 365, 242, 83);
         exitButton.setBounds(630, 491, 83, 83);
         exitHover.setBounds(734, 491, 242, 83);
-        musicOnButton.setBounds(956, 35, 47, 47);
-        musicOffButton.setBounds(956, 35, 47, 47);
+        musicOnButton.setBounds(958, 37, 44, 44);
+        musicOffButton.setBounds(958, 37, 44, 44);
         aboutButton.setBounds(1017, 35, 47, 47);
         aboutPanel.setBounds(721, 59, 320, 141);
 
