@@ -33,17 +33,22 @@ public class InputPanel extends Panel {
     private JTextField requestQueueField, headField;
     private JSlider slider;
     private JLabel timerLabel, totalSeekTimeLabel;
+    private JPanel graphsPanel;
     private DiskScheduler diskScheduler;
+    private SeekTimeGraph graph;
     private boolean validQueue = false, validHead = false;
 
     public InputPanel() {
         super("bg/input-panel.png");
         diskScheduler = new FCFS();
+        graph = new SeekTimeGraph();
+        graphsPanel = graph;
+
         initializeButtons();
         initializeAlgorithmComboBox();
         initializeTextFields();
         initializeLabels();
-        initializeTables();
+        initializeOutput();
         initializeSlider();
         setListeners();
         addComponentsToFrame();
@@ -96,8 +101,8 @@ public class InputPanel extends Panel {
         totalSeekTimeLabel.setBounds(427, 255, 93, 32);
     }
 
-    private void initializeTables() {
-
+    private void initializeOutput() {
+        graphsPanel.setBounds(100, 347, 879, 381);
     }
 
     private void showAllTables() {
@@ -139,13 +144,19 @@ public class InputPanel extends Panel {
         });
 
         algorithmChoice.addActionListener(e -> {
-            switch ((String) Objects.requireNonNull(algorithmChoice.getSelectedItem())) {
-                case "FCFS" -> diskScheduler = new FCFS();
-                case "SSTF" -> diskScheduler = new SSTF();
-                case "SCAN" -> diskScheduler = new SCAN();
-                case "CSCAN" -> diskScheduler = new CSCAN();
-                case "LOOK" -> diskScheduler = new LOOK();
-                case "CLOOK" -> diskScheduler = new CLOOK();
+            String s = (String) Objects.requireNonNull(algorithmChoice.getSelectedItem());
+            if (s.equals("FCFS")) {
+                diskScheduler = new FCFS();
+            } else if (s.equals("SSTF")) {
+                diskScheduler = new SSTF();
+            } else if (s.equals("SCAN")) {
+                diskScheduler = new SCAN();
+            } else if (s.equals("C-SCAN")) {
+                diskScheduler = new CSCAN();
+            } else if (s.equals("LOOK")) {
+                diskScheduler = new LOOK();
+            } else if (s.equals("C-LOOK")) {
+                diskScheduler = new CLOOK();
             }
         });
 
@@ -175,6 +186,9 @@ public class InputPanel extends Panel {
             if (validHead && validQueue) {
                 pauseButton.setVisible(true);
                 runButton.setVisible(false);
+                graph.setInitialPointer(diskScheduler.getHead());
+                graph.setCylinders(diskScheduler.getCylinder());
+                graph.setQueue(diskScheduler.simulate());
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot run the program. Input is invalid.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
@@ -222,6 +236,7 @@ public class InputPanel extends Panel {
                             invalidate(true);
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
+                            diskScheduler.setHead(value);
                             validHead = true;
                         }
                     } else if(input.getName().equals("requestQueueField")) {
@@ -234,17 +249,20 @@ public class InputPanel extends Panel {
                                     parts[parts.length-1].matches("\\d+")) {
                                 // Split the input into an array of integers
                                 String[] nums = str.split(",\\s");
-                                ArrayList<Integer> numList = new ArrayList<>();
-                                for (String num : nums) {
+                                int[] numList = new int[nums.length];
+                                for (int i = 0; i < nums.length; i++) {
+                                    String num = nums[i];
                                     int value = Integer.parseInt(num);
                                     // Check that each integer value in the input is between 0 and 199
                                     if (value < 0 || value > diskScheduler.getCylinder() - 1) {
                                         invalidate(false);
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
-                                        validQueue = true;
+                                        numList[i] = value;
                                     }
                                 }
+                                diskScheduler.setRequestQueue(numList);
+                                validQueue = true;
                             } else {
                                 invalidate(false);
                             }
@@ -275,9 +293,6 @@ public class InputPanel extends Panel {
     }
 
     private void addComponentsToFrame() {
-        this.add(slider);
-        this.add(timerLabel);
-        this.add(totalSeekTimeLabel);
         this.add(musicOnButton);
         this.add(musicOffButton);
         this.add(homeButton);
@@ -289,6 +304,10 @@ public class InputPanel extends Panel {
         this.add(runButton);
         this.add(pauseButton);
         this.add(saveButton);
+        this.add(slider);
+        this.add(timerLabel);
+        this.add(totalSeekTimeLabel);
+        this.add(graphsPanel);
     }
 
 
