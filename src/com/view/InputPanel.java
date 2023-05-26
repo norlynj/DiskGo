@@ -26,7 +26,6 @@ import java.util.*;
 
 public class InputPanel extends Panel {
     Color bgColor = new Color(248, 241, 226);
-    private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20, FRAME_SIZE_MIN = 3, FRAME_SIZE_MAX = 10;
     private ImageButton musicOnButton, musicOffButton, homeButton;
     private CustomDropDown algorithmChoice;
     private ImageButton importButton, randomizeButton, runButton, pauseButton, saveButton;
@@ -103,6 +102,7 @@ public class InputPanel extends Panel {
 
     private void initializeOutput() {
         graphsPanel.setBounds(100, 347, 879, 381);
+        graphsPanel.setBackground(bgColor);
     }
 
     private void showAllTables() {
@@ -193,6 +193,7 @@ public class InputPanel extends Panel {
                 graph.setInitialPointer(diskScheduler.getHead());
                 graph.setCylinders(diskScheduler.getCylinder());
                 graph.setQueue(diskScheduler.simulate());
+                graph.simulateGraph();
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot run the program. Input is invalid.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }

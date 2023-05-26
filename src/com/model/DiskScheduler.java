@@ -20,7 +20,7 @@ public abstract class DiskScheduler {
     }
 
     public int[] simulate() {
-        return requestQueue;
+        return this.requestQueue;
     }
 
     public Step[] getSteps() {
@@ -28,7 +28,7 @@ public abstract class DiskScheduler {
     }
 
     public int[] getRequestQueue() {
-        return requestQueue;
+        return this.requestQueue;
     }
 
     public int getHead() {
