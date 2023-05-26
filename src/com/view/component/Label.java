@@ -13,11 +13,7 @@ public class Label extends JLabel {
     }
 
     public Label(String text) {
-        this(text, 15, false, SwingConstants.CENTER);
-    }
-
-    public Label(String text, boolean multiLine, int alignment) {
-        this(text, 15, true, alignment);
+        this(text, 25, false, SwingConstants.CENTER);
     }
 
     public Label(String text, int fontSize, boolean multiLine, int alignment) {
@@ -28,8 +24,8 @@ public class Label extends JLabel {
 
         } catch(FontFormatException e){} catch (IOException e){}
 
-        setFont(new Font("Montserrat", Font.PLAIN, fontSize));
-        setForeground(Color.BLACK);
+        setFont(new Font("Montserrat", Font.BOLD, fontSize));
+        setForeground(new Color(64, 64, 64));
 
         center = false;
         if (alignment == SwingConstants.CENTER) {
