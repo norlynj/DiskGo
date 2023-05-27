@@ -6,12 +6,12 @@ import java.util.Arrays;
 public class CSCAN extends DiskScheduler{
     @Override
     public int[] simulate() {
-        int[] queue = this.getRequestQueue();
+        int[] queue = this.rQ.getRequestQueue();
         ArrayList<Integer> res = new ArrayList<Integer>();
         int currentIndex = 0;
         Arrays.sort(queue);
         for (int i : queue){
-            if (i > this.getHead()){
+            if (i > this.rQ.getHead()){
                 break;
             }
             currentIndex++;
@@ -25,7 +25,7 @@ public class CSCAN extends DiskScheduler{
         while (j % queue.length != currentIndex){
             int i = j % queue.length;
             if (i == 0) {
-                res.add(this.getCylinder());
+                res.add(this.rQ.getCylinder());
                 res.add(0);
             }
             j++;

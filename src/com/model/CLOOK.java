@@ -7,11 +7,11 @@ public class CLOOK extends DiskScheduler{
     @Override
     public int[] simulate() {
         ArrayList<Integer> res = new ArrayList<Integer>();
-        int[] queue = this.getRequestQueue();
+        int[] queue = this.rQ.getRequestQueue();
         int currentIndex = 0;
         Arrays.sort(queue);
         for (int i : queue) {
-            if (i > this.getHead()) {
+            if (i > this.rQ.getHead()) {
                 break;
             }
             currentIndex++;
