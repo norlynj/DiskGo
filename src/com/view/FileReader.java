@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 public class FileReader {
 
@@ -72,6 +73,14 @@ public class FileReader {
 
     public int[] getQueue() {
         return queue;
+    }
+
+    public String getQueueAsString() {
+        StringJoiner joiner = new StringJoiner(", ");
+        for (int number : queue) {
+            joiner.add(String.valueOf(number));
+        }
+        return joiner.toString();
     }
 
     public int getHeadStartsAt() {

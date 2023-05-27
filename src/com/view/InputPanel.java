@@ -32,22 +32,23 @@ public class InputPanel extends Panel {
     private JTextField requestQueueField, headField;
     private JSlider slider;
     private JLabel timerLabel, totalSeekTimeLabel;
-    private JPanel graphsPanel;
-    private DiskScheduler diskScheduler;
-    private SeekTimeGraph graph;
+    private JPanel  resultsPanel;
+    private JScrollPane  resultsPane;
+    private DiskScheduler[] diskScheduler;
+    private String[] graphTitles;
+    private JLabel[] graphLabels;
+    private SeekTimeGraph[] graphs;
+    private RequestQueue requestQueue = new RequestQueue();
     private boolean validQueue = false, validHead = false;
 
     public InputPanel() {
         super("bg/input-panel.png");
-        diskScheduler = new FCFS();
-        graph = new SeekTimeGraph();
-        graphsPanel = graph;
-
         initializeButtons();
         initializeAlgorithmComboBox();
         initializeTextFields();
         initializeLabels();
-        initializeOutput();
+        initializeSchedulers();
+        initializeGraphs();
         initializeSlider();
         setListeners();
         addComponentsToFrame();
@@ -73,7 +74,7 @@ public class InputPanel extends Panel {
     }
 
     private void initializeAlgorithmComboBox() {
-        algorithmChoice = new CustomDropDown(new String[]{"FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"});
+        algorithmChoice = new CustomDropDown(new String[]{"Simulate all", "FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"});
         algorithmChoice.setBounds(218, 133, 150, 44);
     }
 
@@ -94,25 +95,58 @@ public class InputPanel extends Panel {
     }
 
     private void initializeLabels() {
+        graphTitles = new String[]{"FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"};
+        graphLabels = new Label[graphTitles.length];
         timerLabel = new Label("00:00");
         timerLabel.setBounds(325, 205, 93, 32);
         totalSeekTimeLabel = new Label("0");
         totalSeekTimeLabel.setBounds(427, 255, 93, 32);
     }
 
-    private void initializeOutput() {
-        graphsPanel.setBounds(100, 347, 879, 381);
-        graphsPanel.setBackground(bgColor);
+    private void initializeSchedulers() {
+        diskScheduler = new DiskScheduler[6];
+        for (int i = 0; i < diskScheduler.length; i++) {
+            diskScheduler[i] = new FCFS();
+            diskScheduler[i] = new SSTF();
+            diskScheduler[i] = new CSCAN();
+            diskScheduler[i] = new SCAN();
+            diskScheduler[i] = new LOOK();
+            diskScheduler[i] = new CLOOK();
+            diskScheduler[i].setRequestQueue(requestQueue);
+        }
+    }
+
+    private void initializeGraphs() {
+        graphs = new SeekTimeGraph[6];
+        graphLabels = new Label[6];
+        resultsPanel = new JPanel();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        for (int i = 0; i < graphs.length; i++) {
+
+
+            graphLabels[i] = new Label(graphTitles[i] + " | Total Seek Time: ");
+            graphLabels[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            graphLabels[i].setBackground(bgColor);
+            resultsPanel.add(Box.createVerticalStrut(30));
+            resultsPanel.add(graphLabels[i]);
+            graphs[i] = new SeekTimeGraph();
+            graphs[i].setBackground(bgColor);
+
+            resultsPanel.add(graphs[i]);
+
+            // Add some vertical space between tables
+            graphs[i].setPreferredSize(new Dimension(graphs[i].getPreferredSize().width, 385));
+        }
+        resultsPane = new JScrollPane(resultsPanel);
+        resultsPane.setBorder(BorderFactory.createEmptyBorder());
+        resultsPane.setBounds(100, 347, 879, 381);
+
+        resultsPanel.setBackground(bgColor);
     }
 
     private void showAllTables() {
 
 
-
-    }
-
-
-    private void showOneTable(){
 
     }
 
@@ -145,34 +179,85 @@ public class InputPanel extends Panel {
 
         algorithmChoice.addActionListener(e -> {
             String s = (String) Objects.requireNonNull(algorithmChoice.getSelectedItem());
-            int[] existingQueue = diskScheduler.getRequestQueue();
-            int existingHead = diskScheduler.getHead();
-            if (s.equals("FCFS")) {
-                diskScheduler = new FCFS();
-            } else if (s.equals("SSTF")) {
-                diskScheduler = new SSTF();
-            } else if (s.equals("SCAN")) {
-                diskScheduler = new SCAN();
-            } else if (s.equals("C-SCAN")) {
-                diskScheduler = new CSCAN();
-            } else if (s.equals("LOOK")) {
-                diskScheduler = new LOOK();
-            } else if (s.equals("C-LOOK")) {
-                diskScheduler = new CLOOK();
+            switch (s) {
+                case "Simulate all" -> {
+                    for (int i = 0; i < graphs.length; i++) {
+                        graphs[i].setVisible(true);
+                        graphLabels[i].setVisible(true);
+                    }
+                }
+                case "FCFS" -> {
+                    graphs[0].setVisible(true);
+                    graphLabels[0].setVisible(true);
+                    diskScheduler[0].setRequestQueue(requestQueue);
+                    for (int i = 1; i < graphs.length; i++) {
+                        graphs[i].setVisible(false);
+                        graphLabels[i].setVisible(false);
+                    }
+                }
+                case "SSTF" -> {
+                    graphs[1].setVisible(true);
+                    graphLabels[1].setVisible(true);
+                    diskScheduler[1].setRequestQueue(requestQueue);
+                    for (int i = 0; i < graphs.length; i++) {
+                        if (i != 1) {
+                            graphs[i].setVisible(false);
+                            graphLabels[i].setVisible(false);
+                        }
+                    }
+                }
+                case "SCAN" -> {
+                    graphs[2].setVisible(true);
+                    graphLabels[2].setVisible(true);
+                    diskScheduler[2].setRequestQueue(requestQueue);
+                    for (int i = 0; i < graphs.length; i++) {
+                        if (i != 2) {
+                            graphs[i].setVisible(false);
+                            graphLabels[i].setVisible(false);
+                        }
+                    }
+                }
+                case "C-SCAN" -> {
+                    graphs[3].setVisible(true);
+                    graphLabels[3].setVisible(true);
+                    diskScheduler[3].setRequestQueue(requestQueue);
+                    for (int i = 0; i < graphs.length; i++) {
+                        if (i != 3) {
+                            graphs[i].setVisible(false);
+                            graphLabels[i].setVisible(false);
+                        }
+                    }
+                }
+                case "LOOK" -> {
+                    graphs[4].setVisible(true);
+                    graphLabels[4].setVisible(true);
+                    diskScheduler[4].setRequestQueue(requestQueue);
+                    for (int i = 0; i < graphs.length; i++) {
+                        if (i != 4) {
+                            graphs[i].setVisible(false);
+                            graphLabels[i].setVisible(false);
+                        }
+                    }
+                }
+                case "C-LOOK" -> {
+                    graphs[5].setVisible(true);
+                    graphLabels[5].setVisible(true);
+                    for (int i = 0; i < graphs.length - 1; i++) {
+                        graphs[i].setVisible(false);
+                        graphLabels[i].setVisible(false);
+                    }
+                }
             }
-            diskScheduler.setRequestQueue(existingQueue);
-            diskScheduler.setHead(existingHead);
         });
 
         importButton.addActionListener(e -> {
             FileReader fr = new FileReader();
             try {
                 if (fr.readInputFromFile()) {
-                    diskScheduler.setHead(fr.getHeadStartsAt());
-                    diskScheduler.setRequestQueue(fr.getQueue());
-
-                    requestQueueField.setText(diskScheduler.getQueueAsString());
-                    headField.setText(String.valueOf(diskScheduler.getHead()));
+                    requestQueue.setRequestQueue(fr.getQueue());
+                    requestQueue.setHead(fr.getHeadStartsAt());
+                    headField.setText(String.valueOf(fr.getHeadStartsAt()));
+                    requestQueueField.setText(fr.getQueueAsString());
                 }
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
@@ -180,30 +265,38 @@ public class InputPanel extends Panel {
         });
 
         randomizeButton.addActionListener(e -> {
-            diskScheduler.randomizeQueue();
-            diskScheduler.getRandomizeHead();
-            requestQueueField.setText(diskScheduler.getQueueAsString());
-            headField.setText(String.valueOf(diskScheduler.getHead()));
+            requestQueue.randomizeQueue();
+            requestQueue.getRandomizeHead();
+            requestQueueField.setText(requestQueue.getQueueAsString());
+            headField.setText(String.valueOf(requestQueue.getHead()));
         });
 
         runButton.addActionListener(e -> {
             if (validHead && validQueue) {
                 pauseButton.setVisible(true);
                 runButton.setVisible(false);
-                graph.setInitialPointer(diskScheduler.getHead());
-                graph.setCylinders(diskScheduler.getCylinder());
-                graph.setQueue(diskScheduler.simulate());
-                graph.simulateGraph(slider.getValue(), this);
-                if (!graph.timer.isRunning()) {
+                for (int i = 0; i < graphTitles.length; i++) {
+                    graphs[i].setInitialPointer(requestQueue.getHead());
+                    graphs[i].setCylinders(requestQueue.getCylinder());
+                    graphs[i].setQueue(diskScheduler[i].simulate());
+                    graphs[i].simulateGraph(slider.getValue(), this, i);
+                    if (!graphs[i].timer.isRunning()) {
 
+                    }
                 }
+
+
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot run the program. Input is invalid.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         pauseButton.addActionListener(e -> {
-            graph.stopSimulation(this);
+            for (int i = 0; i < graphTitles.length; i++) {
+                if (graphs[i].timer != null && graphs[i].timer.isRunning()) {
+                    graphs[i].timer.stop();
+                }
+            }
             runButton.setVisible(true);
             pauseButton.setVisible(false);
         });
@@ -240,12 +333,12 @@ public class InputPanel extends Panel {
                     String str = input.getText();
                     if (input.getName().equals("headField")) {
                         int value = Integer.parseInt(str);
-                        if (value < 0 || value > diskScheduler.getCylinder() - 1) {
+                        if (value < 0 || value > requestQueue.getCylinder() - 1) {
                             // If the value is out of range, highlight the text field
                             invalidate(true);
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
-                            diskScheduler.setHead(value);
+                            requestQueue.setHead(value);
                             validHead = true;
                         }
                     } else if(input.getName().equals("requestQueueField")) {
@@ -263,14 +356,14 @@ public class InputPanel extends Panel {
                                     String num = nums[i];
                                     int value = Integer.parseInt(num);
                                     // Check that each integer value in the input is between 0 and 199
-                                    if (value < 0 || value > diskScheduler.getCylinder() - 1) {
+                                    if (value < 0 || value > requestQueue.getCylinder() - 1) {
                                         invalidate(false);
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
                                         numList[i] = value;
                                     }
                                 }
-                                diskScheduler.setRequestQueue(numList);
+                                requestQueue.setRequestQueue(numList);
                                 validQueue = true;
                             } else {
                                 invalidate(false);
@@ -316,7 +409,7 @@ public class InputPanel extends Panel {
         this.add(slider);
         this.add(timerLabel);
         this.add(totalSeekTimeLabel);
-        this.add(graphsPanel);
+        this.add(resultsPane);
     }
 
     private void simulate() {
@@ -366,5 +459,13 @@ public class InputPanel extends Panel {
 
     public JLabel getTotalSeekTimeLabel() {
         return totalSeekTimeLabel;
+    }
+
+    public JLabel[] getGraphLabels() {
+        return graphLabels;
+    }
+
+    public String[] getGraphTitles() {
+        return graphTitles;
     }
 }

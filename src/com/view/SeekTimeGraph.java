@@ -19,7 +19,7 @@ public class SeekTimeGraph extends JPanel {
     public SeekTimeGraph() {
     }
 
-    public void simulateGraph(int delay, InputPanel panel) {
+    public void simulateGraph(int delay, InputPanel panel, int simulatorNumber) {
         currentIndex = 0;  // Reset the current index
         timer = new Timer(delay, new ActionListener() {
             long startTime = System.currentTimeMillis();
@@ -43,7 +43,7 @@ public class SeekTimeGraph extends JPanel {
                     totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
                     System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
                     panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
-
+                    panel.getGraphLabels()[simulatorNumber].setText(panel.getGraphTitles()[simulatorNumber] + " | Total Seek Time: " + totalSeekTime);
                     // Increment the current index
                     currentIndex++;
                 }
