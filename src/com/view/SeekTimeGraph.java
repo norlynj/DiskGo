@@ -14,6 +14,10 @@ public class SeekTimeGraph extends JPanel {
     private int cylinders;
     private int currentIndex;  // Current index to track the progress of simulation
     public Timer timer;  // Timer to control the drawing interval
+    private int totalSeekTime;
+
+    public SeekTimeGraph() {
+    }
 
     public void simulateGraph(int delay, InputPanel panel) {
         currentIndex = 0;  // Reset the current index
@@ -21,9 +25,6 @@ public class SeekTimeGraph extends JPanel {
             long startTime = System.currentTimeMillis();
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Increment the current index
-                currentIndex++;
-
                 // Repaint the graph to update the drawing
                 repaint();
 
@@ -33,10 +34,18 @@ public class SeekTimeGraph extends JPanel {
                 panel.getTimerLabel().setText(time);
 
                 // Check if the simulation has reached the end
-                if (currentIndex >= queue.length) {
+                if (currentIndex + 1 >= queue.length) {
                     timer.stop();
                     panel.getRunButton().setVisible(true);
                     panel.getPauseButton().setVisible(false);
+                } else {
+                    System.out.println(totalSeekTime);
+                    totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
+                    System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
+                    panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
+
+                    // Increment the current index
+                    currentIndex++;
                 }
             }
         });
@@ -50,8 +59,6 @@ public class SeekTimeGraph extends JPanel {
             panel.getRunButton().setVisible(true);
             panel.getPauseButton().setVisible(false);
         }
-    }
-    public SeekTimeGraph() {
     }
 
     @Override
@@ -88,7 +95,7 @@ public class SeekTimeGraph extends JPanel {
         g.fillOval((int) (initialPointer * horizontalStep), (int) verticalStep - (circleSize / 2), circleSize, circleSize);
         g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), (int) verticalStep, (int) (queue[0] * horizontalStep)  + (circleSize / 2), (int) (2 * verticalStep));
 
-        for (int i = 0; i < currentIndex - 1; i++) {
+        for (int i = 0; i < currentIndex; i++) {
             // Draw only up to the current index
             int startX = (int) (queue[i] * horizontalStep) + (circleSize / 2);
             int startY = (int) ((i + 2) * verticalStep);
@@ -150,6 +157,7 @@ public class SeekTimeGraph extends JPanel {
 
     public void setQueue(int[] queue) {
         this.queue = queue;
+        totalSeekTime = Math.abs(initialPointer - queue[0]);
         repaint();
     }
 

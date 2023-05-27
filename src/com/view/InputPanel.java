@@ -363,4 +363,8 @@ public class InputPanel extends Panel {
     public JLabel getTimerLabel() {
         return timerLabel;
     }
+
+    public JLabel getTotalSeekTimeLabel() {
+        return totalSeekTimeLabel;
+    }
 }
