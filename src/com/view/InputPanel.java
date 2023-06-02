@@ -4,12 +4,9 @@ import model.*;
 import view.component.*;
 import view.component.Frame;
 import view.component.Label;
-import view.component.HighlightCellRenderer;
+import view.component.ScrollBar;
 import view.component.Panel;
 import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -34,6 +31,7 @@ public class InputPanel extends Panel {
     private JLabel timerLabel, totalSeekTimeLabel;
     private JPanel  resultsPanel;
     private JScrollPane  resultsPane;
+    private JScrollPane[]  scrollPanes;
     private DiskScheduler[] diskScheduler;
     private String[] graphTitles;
     private JLabel[] graphLabels;
@@ -119,11 +117,10 @@ public class InputPanel extends Panel {
     private void initializeGraphs() {
         graphs = new SeekTimeGraph[6];
         graphLabels = new Label[6];
+        scrollPanes = new JScrollPane[6];
         resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         for (int i = 0; i < graphs.length; i++) {
-
-
             graphLabels[i] = new Label(graphTitles[i] + " | Total Seek Time: ");
             graphLabels[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             graphLabels[i].setBackground(bgColor);
@@ -131,20 +128,23 @@ public class InputPanel extends Panel {
             graphs[i] = new SeekTimeGraph();
             graphs[i].setBackground(bgColor);
 
-            resultsPanel.add(graphs[i]);
+            scrollPanes[i] = new JScrollPane(graphs[i]);
+
+            resultsPanel.add(scrollPanes[i]);
 
             // Add some vertical space between tables
-            graphs[i].setPreferredSize(new Dimension(graphs[i].getPreferredSize().width, 385));
+            scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, 385));
+            scrollPanes[i].setBorder(BorderFactory.createEmptyBorder());
         }
         resultsPane = new JScrollPane(resultsPanel);
         resultsPane.setBorder(BorderFactory.createEmptyBorder());
         resultsPane.setBounds(70, 340, 1000, 400);
-
+        ScrollBar sbV = new ScrollBar();
+        resultsPane.setVerticalScrollBar(sbV);
+        ScrollBar sbH = new ScrollBar();
+        sbH.setOrientation(JScrollBar.HORIZONTAL);
+        resultsPane.setHorizontalScrollBar(sbH);
         resultsPanel.setBackground(bgColor);
-
-
-
-
     }
 
 
@@ -186,64 +186,64 @@ public class InputPanel extends Panel {
             switch (s) {
                 case "Simulate all" -> {
                     for (int i = 0; i < graphs.length; i++) {
-                        graphs[i].setVisible(true);
+                        scrollPanes[i].setVisible(true);
                         graphLabels[i].setVisible(true);
                     }
                 }
                 case "FCFS" -> {
-                    graphs[0].setVisible(true);
+                    scrollPanes[0].setVisible(true);
                     graphLabels[0].setVisible(false);
                     diskScheduler[0].setRequestQueue(requestQueue);
-                    for (int i = 1; i < graphs.length; i++) {
-                        graphs[i].setVisible(false);
+                    for (int i = 1; i < scrollPanes.length; i++) {
+                        scrollPanes[i].setVisible(false);
                         graphLabels[i].setVisible(false);
                     }
                 }
                 case "SSTF" -> {
-                    graphs[1].setVisible(true);
+                    scrollPanes[1].setVisible(true);
                     diskScheduler[1].setRequestQueue(requestQueue);
-                    for (int i = 0; i < graphs.length; i++) {
+                    for (int i = 0; i < scrollPanes.length; i++) {
                         if (i != 1) {
-                            graphs[i].setVisible(false);
+                            scrollPanes[i].setVisible(false);
                         }
                         graphLabels[i].setVisible(false);
                     }
                 }
                 case "SCAN" -> {
-                    graphs[2].setVisible(true);
+                    scrollPanes[2].setVisible(true);
                     diskScheduler[2].setRequestQueue(requestQueue);
                     for (int i = 0; i < graphs.length; i++) {
                         if (i != 2) {
-                            graphs[i].setVisible(false);
+                            scrollPanes[i].setVisible(false);
                         }
                         graphLabels[i].setVisible(false);
                     }
                 }
                 case "C-SCAN" -> {
-                    graphs[3].setVisible(true);
+                    scrollPanes[3].setVisible(true);
                     diskScheduler[3].setRequestQueue(requestQueue);
-                    for (int i = 0; i < graphs.length; i++) {
+                    for (int i = 0; i < scrollPanes.length; i++) {
                         if (i != 3) {
-                            graphs[i].setVisible(false);
+                            scrollPanes[i].setVisible(false);
                         }
                         graphLabels[i].setVisible(false);
                     }
                 }
                 case "LOOK" -> {
-                    graphs[4].setVisible(true);
+                    scrollPanes[4].setVisible(true);
                     diskScheduler[4].setRequestQueue(requestQueue);
-                    for (int i = 0; i < graphs.length; i++) {
+                    for (int i = 0; i < scrollPanes.length; i++) {
                         if (i != 4) {
-                            graphs[i].setVisible(false);
+                            scrollPanes[i].setVisible(false);
                         }
                         graphLabels[i].setVisible(false);
                     }
                 }
                 case "C-LOOK" -> {
-                    graphs[5].setVisible(true);
+                    scrollPanes[5].setVisible(true);
                     graphLabels[5].setVisible(false);
-                    for (int i = 0; i < graphs.length - 1; i++) {
-                        graphs[i].setVisible(false);
+                    for (int i = 0; i < scrollPanes.length - 1; i++) {
+                        scrollPanes[i].setVisible(false);
                         graphLabels[i].setVisible(false);
                     }
                 }
@@ -390,13 +390,13 @@ public class InputPanel extends Panel {
             }
 
             private void adjustPaneSize() {
-                for (int i = 0; i <= graphs.length; i++){
-                    if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 20) {
-//                        graphs[i].setPreferredSize(new Dimension(graphs[i].getPreferredSize().width, 385));
-                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 30) {
-//                        graphs[i].setBounds(70, 340, 1000, 600);
+                for (int i = 0; i < scrollPanes.length; i++){
+                    if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 10) {
+                        scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, 385));
+                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 20) {
+                        scrollPanes[i].setPreferredSize(new Dimension(1000, 500));
                     } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 40) {
-//                        graphs[i].setBounds(70, 340, 1000, 800);
+                        scrollPanes[i].setPreferredSize(new Dimension(1300, 800));
                     }
                 }
             }
