@@ -392,11 +392,13 @@ public class InputPanel extends Panel {
             private void adjustPaneSize() {
                 for (int i = 0; i < scrollPanes.length; i++){
                     if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 10) {
-                        scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, 385));
+                        scrollPanes[i].setPreferredSize(new Dimension(800, 385));
                     } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 20) {
                         scrollPanes[i].setPreferredSize(new Dimension(1000, 500));
-                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 40) {
+                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 30) {
                         scrollPanes[i].setPreferredSize(new Dimension(1300, 800));
+                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 40) {
+                        scrollPanes[i].setPreferredSize(new Dimension(1500, 800));
                     }
                 }
             }
