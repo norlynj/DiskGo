@@ -105,8 +105,8 @@ public class InputPanel extends Panel {
         diskScheduler = new DiskScheduler[6];
         diskScheduler[0] = new FCFS();
         diskScheduler[1] = new SSTF();
-        diskScheduler[2] = new CSCAN();
-        diskScheduler[3] = new SCAN();
+        diskScheduler[2] = new SCAN();
+        diskScheduler[3] = new CSCAN();
         diskScheduler[4] = new LOOK();
         diskScheduler[5] = new CLOOK();
         for (int i = 0; i < diskScheduler.length; i++) {
@@ -186,6 +186,7 @@ public class InputPanel extends Panel {
             switch (s) {
                 case "Simulate all" -> {
                     for (int i = 0; i < graphs.length; i++) {
+                        diskScheduler[i].setRequestQueue(requestQueue);
                         scrollPanes[i].setVisible(true);
                         graphLabels[i].setVisible(true);
                     }
@@ -281,7 +282,6 @@ public class InputPanel extends Panel {
                     graphs[i].setInitialPointer(requestQueue.getHead());
                     graphs[i].setCylinders(requestQueue.getCylinder());
                     graphs[i].setQueue(diskScheduler[i].simulate());
-                    System.out.print("selected: " + algorithmChoice.getSelectedItem());
                     graphs[i].simulateGraph(slider.getValue(), this, i, algorithmChoice.getSelectedItem().equals("Simulate all"));
                     if (!graphs[i].timer.isRunning()) {
 

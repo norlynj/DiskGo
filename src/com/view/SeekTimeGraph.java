@@ -150,7 +150,6 @@ public class SeekTimeGraph extends JPanel {
     public void setQueue(int[] queue) {
         this.queue = queue;
         totalSeekTime = Math.abs(initialPointer - queue[0]);
-        repaint();
     }
 
     public int getCylinders() {
