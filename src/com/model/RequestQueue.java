@@ -6,7 +6,7 @@ import java.util.StringJoiner;
 public class RequestQueue {
     private int[] requestQueue;
     private int head;
-    private int cylinder = 200; // 0-199
+    private int cylinder = 199; // 0-199
     Random random = new Random();
 
     public RequestQueue() {

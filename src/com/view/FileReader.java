@@ -57,7 +57,7 @@ public class FileReader {
                 scanner.close();
 
             } catch (FileNotFoundException | ArrayIndexOutOfBoundsException | NumberFormatException ex) {
-                System.out.println("Error reading the file");
+                JOptionPane.showMessageDialog(null, "Error reading the file");
                 return false;
             }
         } else {

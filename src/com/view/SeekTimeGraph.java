@@ -78,33 +78,57 @@ public class SeekTimeGraph extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g.setColor(bgColor);
+        for (int i = 0; i < queue.length; i++) {
+            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize, (int) ((i + 2.5) * verticalStep)); // draw point labels
 
-        g.drawLine(0, 25, w, 25);
-
-        g.drawString(String.valueOf(initialPointer), (int) (initialPointer * horizontalStep) + circleSize, 20);
-        g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), 0, (int) (initialPointer * horizontalStep) + (circleSize / 2), 25);
-
-        for (int i = 0; i < queue.length - 1; i++) {
-            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize, 20);
-            g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2), 0, (int) (queue[i] * horizontalStep) + (circleSize / 2), 25);
+            // Draw the string above the line
+            FontMetrics fontMetrics = g.getFontMetrics();
+            int stringWidth = fontMetrics.stringWidth(String.valueOf(queue[i]));
+            int stringX = (int) (queue[i] * horizontalStep) + (circleSize / 2) - (stringWidth / 2);
+            int stringY = 10; // Adjust the vertical position of the string, e.g., 10 pixels above the line
+            g.drawString(String.valueOf(queue[i]), stringX, stringY);
+            g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2), 15, (int) (queue[i] * horizontalStep) + (circleSize / 2), 25);
         }
 
         g.setColor(bgColor);
+        g.drawLine(0, 25, w, 25);
 
-        g.fillOval((int) (initialPointer * horizontalStep), (int) verticalStep - (circleSize / 2), circleSize, circleSize);
-        g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), (int) verticalStep, (int) (queue[0] * horizontalStep)  + (circleSize / 2), (int) (2 * verticalStep));
+
+        g.drawString(String.valueOf(initialPointer), (int) (initialPointer * horizontalStep) + circleSize, 20);
+
+        // Draw arrow from initial pointer to first queue element
+        int startX = (int) (initialPointer * horizontalStep) + (circleSize / 2);
+        int startY = 25;
+        int endX = (int) (queue[0] * horizontalStep) + (circleSize / 2);
+        int endY = (int) (2 * verticalStep);
+
+        drawArrow(g, startX, startY, endX, endY);
+        g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
 
         for (int i = 0; i < currentIndex; i++) {
             // Draw only up to the current index
-            int startX = (int) (queue[i] * horizontalStep) + (circleSize / 2);
-            int startY = (int) ((i + 2) * verticalStep);
-            int endX = (int) (queue[i + 1] * horizontalStep) + (circleSize / 2);
-            int endY = (int) ((i + 3) * verticalStep);
+            startX = (int) (queue[i] * horizontalStep) + (circleSize / 2);
+            startY = (int) ((i + 2) * verticalStep);
+            endX = (int) (queue[i + 1] * horizontalStep) + (circleSize / 2);
+            endY = (int) ((i + 3) * verticalStep);
 
+            // Calculate the center point of the line
+            int centerX = (startX + endX) / 2;
+            int centerY = (startY + endY) / 2;
+
+            // Calculate the angle of the line
+            double angle = Math.atan2(endY - startY, endX - startX);
+
+            // Calculate the coordinates of the string position
+            int stringX = (int) (centerX + (circleSize / 2) * Math.cos(angle));
+            int stringY = (int) (centerY + (circleSize / 2) * Math.sin(angle));
+
+            // Draw the line
             drawArrow(g, startX, startY, endX, endY);
         }
     }
+
+
 
     private void drawArrow(Graphics g, int startX, int startY, int endX, int endY) {
         // Calculate the arrowhead size

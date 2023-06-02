@@ -105,13 +105,13 @@ public class InputPanel extends Panel {
 
     private void initializeSchedulers() {
         diskScheduler = new DiskScheduler[6];
+        diskScheduler[0] = new FCFS();
+        diskScheduler[1] = new SSTF();
+        diskScheduler[2] = new CSCAN();
+        diskScheduler[3] = new SCAN();
+        diskScheduler[4] = new LOOK();
+        diskScheduler[5] = new CLOOK();
         for (int i = 0; i < diskScheduler.length; i++) {
-            diskScheduler[i] = new FCFS();
-            diskScheduler[i] = new SSTF();
-            diskScheduler[i] = new CSCAN();
-            diskScheduler[i] = new SCAN();
-            diskScheduler[i] = new LOOK();
-            diskScheduler[i] = new CLOOK();
             diskScheduler[i].setRequestQueue(requestQueue);
         }
     }
@@ -121,9 +121,18 @@ public class InputPanel extends Panel {
         graphLabels = new Label[6];
         resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+
+        int visibleGraphCount = graphTitles.length;  // Number of visible graphs
+        int visibleGraphHeight = 385;  // Height of each visible graph
+
+        // Calculate the desired width based on the number of visible graphs
+        int desiredWidth = 879;
+        if (visibleGraphCount > 1) {
+            int extraWidth = (visibleGraphCount - 1) * 30;  // Additional width for spacing between graphs
+            desiredWidth += extraWidth;
+        }
+
         for (int i = 0; i < graphs.length; i++) {
-
-
             graphLabels[i] = new Label(graphTitles[i] + " | Total Seek Time: ");
             graphLabels[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             graphLabels[i].setBackground(bgColor);
@@ -134,15 +143,21 @@ public class InputPanel extends Panel {
 
             resultsPanel.add(graphs[i]);
 
-            // Add some vertical space between tables
-            graphs[i].setPreferredSize(new Dimension(graphs[i].getPreferredSize().width, 385));
+            // Calculate the preferred width for each graph
+            int graphWidth = desiredWidth;
+            if (visibleGraphCount > 1) {
+                graphWidth -= (visibleGraphCount - 1) * 30;
+            }
+            graphs[i].setPreferredSize(new Dimension(graphWidth, visibleGraphHeight));
         }
+
         resultsPane = new JScrollPane(resultsPanel);
         resultsPane.setBorder(BorderFactory.createEmptyBorder());
-        resultsPane.setBounds(100, 347, 879, 381);
+        resultsPane.setBounds(50, 347, desiredWidth, 381);
 
         resultsPanel.setBackground(bgColor);
     }
+
 
     private void showAllTables() {
 
@@ -269,6 +284,8 @@ public class InputPanel extends Panel {
             requestQueue.getRandomizeHead();
             requestQueueField.setText(requestQueue.getQueueAsString());
             headField.setText(String.valueOf(requestQueue.getHead()));
+            validQueue = true;
+            validHead = true;
         });
 
         runButton.addActionListener(e -> {
