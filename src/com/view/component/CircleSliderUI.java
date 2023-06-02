@@ -2,17 +2,18 @@ package view.component;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 
 public class CircleSliderUI extends BasicSliderUI {
 
     private Color thumbColor = new Color(219, 220, 222);
     private Color borderColor = Color.black;
+    private boolean isThumbHovered = false;
 
     public CircleSliderUI(JSlider slider) {
         super(slider);
-        this.thumbColor = thumbColor;
-        this.borderColor = borderColor;
         slider.setBackground(new Color(231, 205, 194));
         slider.setFocusable(false); // Disable focus painting
 
@@ -20,6 +21,19 @@ public class CircleSliderUI extends BasicSliderUI {
         slider.setMaximum(5000);
         slider.setInverted(true);
 
+        slider.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                isThumbHovered = true;
+                slider.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                isThumbHovered = false;
+                slider.repaint();
+            }
+        });
     }
 
     protected Dimension getThumbSize() {
@@ -44,6 +58,12 @@ public class CircleSliderUI extends BasicSliderUI {
         // Draw the circle thumb
         g2d.setColor(thumbColor);
         g2d.fillOval(x, y, width, height);
+
+        // Add a hover effect when the mouse is over the thumb
+        if (isThumbHovered) {
+            g2d.setColor(new Color(0, 0, 0, 50));
+            g2d.fillOval(x, y, width, height);
+        }
     }
 
     @Override

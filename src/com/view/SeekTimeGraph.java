@@ -72,7 +72,7 @@ public class SeekTimeGraph extends JPanel {
         int w = getWidth();
 
         float verticalStep = (float) h / (float) (queue.length + 2);
-        float horizontalStep = (float)(w - circleSize) / (float) cylinders;
+        float horizontalStep = (float) (w - circleSize) / (float) cylinders;
 
         // Enable anti-aliasing
         Graphics2D g2d = (Graphics2D) g;
@@ -86,14 +86,24 @@ public class SeekTimeGraph extends JPanel {
         g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), 0, (int) (initialPointer * horizontalStep) + (circleSize / 2), 25);
 
         for (int i = 0; i < queue.length - 1; i++) {
-            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize, 20);
+            int x = (int) (queue[i] * horizontalStep) + circleSize;
+            int y = 20;
+
+            // Calculate the x-coordinate based on the previous number's position
+            if (i > 0) {
+                int previousX = (int) (queue[i - 1] * horizontalStep) + circleSize;
+                int previousWidth = g.getFontMetrics().stringWidth(String.valueOf(queue[i - 1]));
+                x = Math.max(x, previousX + previousWidth + 5); // Adjust the spacing between numbers
+            }
+
+            g.drawString(String.valueOf(queue[i]), x, y);
             g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2), 0, (int) (queue[i] * horizontalStep) + (circleSize / 2), 25);
         }
 
         g.setColor(bgColor);
 
         g.fillOval((int) (initialPointer * horizontalStep), (int) verticalStep - (circleSize / 2), circleSize, circleSize);
-        g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), (int) verticalStep, (int) (queue[0] * horizontalStep)  + (circleSize / 2), (int) (2 * verticalStep));
+        g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), (int) verticalStep, (int) (queue[0] * horizontalStep) + (circleSize / 2), (int) (2 * verticalStep));
 
         for (int i = 0; i < currentIndex; i++) {
             // Draw only up to the current index
@@ -105,6 +115,7 @@ public class SeekTimeGraph extends JPanel {
             drawArrow(g, startX, startY, endX, endY);
         }
     }
+
 
     private void drawArrow(Graphics g, int startX, int startY, int endX, int endY) {
         // Calculate the arrowhead size
@@ -160,6 +171,7 @@ public class SeekTimeGraph extends JPanel {
         totalSeekTime = Math.abs(initialPointer - queue[0]);
         repaint();
     }
+
 
     public int getCylinders() {
         return cylinders;
