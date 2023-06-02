@@ -19,7 +19,7 @@ public class SeekTimeGraph extends JPanel {
     public SeekTimeGraph() {
     }
 
-    public void simulateGraph(int delay, InputPanel panel, int simulatorNumber) {
+    public void simulateGraph(int delay, InputPanel panel, int simulatorNumber, boolean simulateAll) {
         currentIndex = 0;  // Reset the current index
         timer = new Timer(delay, new ActionListener() {
             long startTime = System.currentTimeMillis();
@@ -42,7 +42,9 @@ public class SeekTimeGraph extends JPanel {
                     System.out.println(totalSeekTime);
                     totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
                     System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
-                    panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
+                    if (!simulateAll) {
+                        panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
+                    }
                     panel.getGraphLabels()[simulatorNumber].setText(panel.getGraphTitles()[simulatorNumber] + " | Total Seek Time: " + totalSeekTime);
                     // Increment the current index
                     currentIndex++;
@@ -72,14 +74,13 @@ public class SeekTimeGraph extends JPanel {
         int w = getWidth();
 
         float verticalStep = (float) h / (float) (queue.length + 2);
-        float horizontalStep = (float)(w - circleSize) / (float) cylinders;
+        float horizontalStep = (float) (w - circleSize) / (float) cylinders;
 
         // Enable anti-aliasing
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         for (int i = 0; i < queue.length; i++) {
-            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize, (int) ((i + 2.5) * verticalStep)); // draw point labels
 
             // Draw the string above the line
             FontMetrics fontMetrics = g.getFontMetrics();
@@ -93,7 +94,6 @@ public class SeekTimeGraph extends JPanel {
         g.setColor(bgColor);
         g.drawLine(0, 25, w, 25);
 
-
         g.drawString(String.valueOf(initialPointer), (int) (initialPointer * horizontalStep) + circleSize, 20);
 
         // Draw arrow from initial pointer to first queue element
@@ -102,7 +102,7 @@ public class SeekTimeGraph extends JPanel {
         int endX = (int) (queue[0] * horizontalStep) + (circleSize / 2);
         int endY = (int) (2 * verticalStep);
 
-        drawArrow(g, startX, startY, endX, endY);
+        g.drawLine(startX, startY, endX, endY);
         g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
 
         for (int i = 0; i < currentIndex; i++) {
@@ -119,51 +119,19 @@ public class SeekTimeGraph extends JPanel {
             // Calculate the angle of the line
             double angle = Math.atan2(endY - startY, endX - startX);
 
-            // Calculate the coordinates of the string position
-            int stringX = (int) (centerX + (circleSize / 2) * Math.cos(angle));
-            int stringY = (int) (centerY + (circleSize / 2) * Math.sin(angle));
+            // Coordinates
+            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize, (int) ((i + 1.5) * verticalStep));
 
-            // Draw the line
-            drawArrow(g, startX, startY, endX, endY);
+            // Draw the line and circle
+            g.drawLine(startX, startY, endX, endY);
+            g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
         }
-    }
-
-
-
-    private void drawArrow(Graphics g, int startX, int startY, int endX, int endY) {
-        // Calculate the arrowhead size
-        int arrowSize = 10;
-
-        // Enable anti-aliasing
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Save the original stroke
-        Stroke originalStroke = g2d.getStroke();
-
-        // Draw the line
-        g.drawLine(startX, startY, endX, endY);
-
-        // Calculate the angle of the arrow
-        double angle = Math.atan2(endY - startY, endX - startX);
-
-        // Calculate the coordinates of the arrowhead points
-        int x1 = (int) (endX - arrowSize * Math.cos(angle - Math.PI / 6));
-        int y1 = (int) (endY - arrowSize * Math.sin(angle - Math.PI / 6));
-        int x2 = (int) (endX - arrowSize * Math.cos(angle + Math.PI / 6));
-        int y2 = (int) (endY - arrowSize * Math.sin(angle + Math.PI / 6));
-
-        // Adjust the thickness of the arrow
-        float arrowThickness = 2.0f;
-        g2d.setStroke(new BasicStroke(arrowThickness));
-
-        // Draw the arrowhead
-        g.drawLine(endX, endY, x1, y1);
-        g.drawLine(endX, endY, x2, y2);
-
-        // Restore the original stroke
-        g2d.setStroke(originalStroke);
-
+        int lastIndex = currentIndex;
+        int lastX = (int) (queue[lastIndex] * horizontalStep) + (circleSize / 2);
+        int lastY = (int) ((lastIndex + 2) * verticalStep);
+        // Coordinates
+        g.drawString(String.valueOf(queue[lastIndex]), (int) (queue[lastIndex] * horizontalStep) + circleSize, (int) ((lastIndex + 1.5) * verticalStep));
+        g.fillOval(lastX - (circleSize / 2), lastY - (circleSize / 2), circleSize, circleSize);
     }
 
     public int getInitialPointer() {

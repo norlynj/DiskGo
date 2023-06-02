@@ -99,7 +99,7 @@ public class InputPanel extends Panel {
         graphLabels = new Label[graphTitles.length];
         timerLabel = new Label("00:00");
         timerLabel.setBounds(325, 205, 93, 32);
-        totalSeekTimeLabel = new Label("0");
+        totalSeekTimeLabel = new Label("");
         totalSeekTimeLabel.setBounds(427, 255, 93, 32);
     }
 
@@ -121,41 +121,30 @@ public class InputPanel extends Panel {
         graphLabels = new Label[6];
         resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-
-        int visibleGraphCount = graphTitles.length;  // Number of visible graphs
-        int visibleGraphHeight = 385;  // Height of each visible graph
-
-        // Calculate the desired width based on the number of visible graphs
-        int desiredWidth = 879;
-        if (visibleGraphCount > 1) {
-            int extraWidth = (visibleGraphCount - 1) * 30;  // Additional width for spacing between graphs
-            desiredWidth += extraWidth;
-        }
-
         for (int i = 0; i < graphs.length; i++) {
+
+
             graphLabels[i] = new Label(graphTitles[i] + " | Total Seek Time: ");
             graphLabels[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             graphLabels[i].setBackground(bgColor);
-            resultsPanel.add(Box.createVerticalStrut(30));
             resultsPanel.add(graphLabels[i]);
             graphs[i] = new SeekTimeGraph();
             graphs[i].setBackground(bgColor);
 
             resultsPanel.add(graphs[i]);
 
-            // Calculate the preferred width for each graph
-            int graphWidth = desiredWidth;
-            if (visibleGraphCount > 1) {
-                graphWidth -= (visibleGraphCount - 1) * 30;
-            }
-            graphs[i].setPreferredSize(new Dimension(graphWidth, visibleGraphHeight));
+            // Add some vertical space between tables
+            graphs[i].setPreferredSize(new Dimension(graphs[i].getPreferredSize().width, 385));
         }
-
         resultsPane = new JScrollPane(resultsPanel);
         resultsPane.setBorder(BorderFactory.createEmptyBorder());
-        resultsPane.setBounds(50, 347, desiredWidth, 381);
+        resultsPane.setBounds(70, 340, 1000, 400);
 
         resultsPanel.setBackground(bgColor);
+
+
+
+
     }
 
 
@@ -203,7 +192,7 @@ public class InputPanel extends Panel {
                 }
                 case "FCFS" -> {
                     graphs[0].setVisible(true);
-                    graphLabels[0].setVisible(true);
+                    graphLabels[0].setVisible(false);
                     diskScheduler[0].setRequestQueue(requestQueue);
                     for (int i = 1; i < graphs.length; i++) {
                         graphs[i].setVisible(false);
@@ -212,51 +201,47 @@ public class InputPanel extends Panel {
                 }
                 case "SSTF" -> {
                     graphs[1].setVisible(true);
-                    graphLabels[1].setVisible(true);
                     diskScheduler[1].setRequestQueue(requestQueue);
                     for (int i = 0; i < graphs.length; i++) {
                         if (i != 1) {
                             graphs[i].setVisible(false);
-                            graphLabels[i].setVisible(false);
                         }
+                        graphLabels[i].setVisible(false);
                     }
                 }
                 case "SCAN" -> {
                     graphs[2].setVisible(true);
-                    graphLabels[2].setVisible(true);
                     diskScheduler[2].setRequestQueue(requestQueue);
                     for (int i = 0; i < graphs.length; i++) {
                         if (i != 2) {
                             graphs[i].setVisible(false);
-                            graphLabels[i].setVisible(false);
                         }
+                        graphLabels[i].setVisible(false);
                     }
                 }
                 case "C-SCAN" -> {
                     graphs[3].setVisible(true);
-                    graphLabels[3].setVisible(true);
                     diskScheduler[3].setRequestQueue(requestQueue);
                     for (int i = 0; i < graphs.length; i++) {
                         if (i != 3) {
                             graphs[i].setVisible(false);
-                            graphLabels[i].setVisible(false);
                         }
+                        graphLabels[i].setVisible(false);
                     }
                 }
                 case "LOOK" -> {
                     graphs[4].setVisible(true);
-                    graphLabels[4].setVisible(true);
                     diskScheduler[4].setRequestQueue(requestQueue);
                     for (int i = 0; i < graphs.length; i++) {
                         if (i != 4) {
                             graphs[i].setVisible(false);
-                            graphLabels[i].setVisible(false);
                         }
+                        graphLabels[i].setVisible(false);
                     }
                 }
                 case "C-LOOK" -> {
                     graphs[5].setVisible(true);
-                    graphLabels[5].setVisible(true);
+                    graphLabels[5].setVisible(false);
                     for (int i = 0; i < graphs.length - 1; i++) {
                         graphs[i].setVisible(false);
                         graphLabels[i].setVisible(false);
@@ -296,7 +281,8 @@ public class InputPanel extends Panel {
                     graphs[i].setInitialPointer(requestQueue.getHead());
                     graphs[i].setCylinders(requestQueue.getCylinder());
                     graphs[i].setQueue(diskScheduler[i].simulate());
-                    graphs[i].simulateGraph(slider.getValue(), this, i);
+                    System.out.print("selected: " + algorithmChoice.getSelectedItem());
+                    graphs[i].simulateGraph(slider.getValue(), this, i, algorithmChoice.getSelectedItem().equals("Simulate all"));
                     if (!graphs[i].timer.isRunning()) {
 
                     }
@@ -335,6 +321,7 @@ public class InputPanel extends Panel {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 validateInput();
+                adjustPaneSize();
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
@@ -399,6 +386,18 @@ public class InputPanel extends Panel {
                     validHead = false;
                 } else {
                     validQueue = false;
+                }
+            }
+
+            private void adjustPaneSize() {
+                for (int i = 0; i <= graphs.length; i++){
+                    if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 20) {
+//                        graphs[i].setPreferredSize(new Dimension(graphs[i].getPreferredSize().width, 385));
+                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 30) {
+//                        graphs[i].setBounds(70, 340, 1000, 600);
+                    } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 40) {
+//                        graphs[i].setBounds(70, 340, 1000, 800);
+                    }
                 }
             }
         });
