@@ -83,14 +83,25 @@ public class SeekTimeGraph extends JPanel {
         // Enable anti-aliasing
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Draw "0" and "199" on the line
+        g.drawString("0", margin, margin + 10);
+        g.drawString("199", w - margin - 20, margin + 10);
+
+        // Draw the lines below "0" and "199"
+        g.drawLine(margin, margin + 15, margin, margin + 25);
+        g.drawLine(w - margin, margin + 15, w - margin, margin + 25);
+
         for (int i = 0; i < queue.length; i++) {
             // Draw the string above the line
             FontMetrics fontMetrics = g.getFontMetrics();
             int stringWidth = fontMetrics.stringWidth(String.valueOf(queue[i]));
             int stringX = (int) (queue[i] * horizontalStep) + (circleSize / 2) - (stringWidth / 2) + margin;
             int stringY = margin + 10; // Adjust the vertical position of the string, e.g., 10 pixels above the line
-            g.drawString(String.valueOf(queue[i]), stringX, stringY);
-            g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2) + margin, margin + 15, (int) (queue[i] * horizontalStep) + (circleSize / 2) + margin, margin + 25);
+            if (queue[i] != 0 && queue[i] != 199 ) { // to avoid duplication of printing the string and line
+                g.drawString(String.valueOf(queue[i]), stringX, stringY);
+                g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2) + margin, margin + 15, (int) (queue[i] * horizontalStep) + (circleSize / 2) + margin, margin + 25);
+            }
         }
 
         g.setColor(bgColor);
