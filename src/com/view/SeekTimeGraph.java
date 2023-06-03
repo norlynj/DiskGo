@@ -39,9 +39,7 @@ public class SeekTimeGraph extends JPanel {
                     panel.getRunButton().setVisible(true);
                     panel.getPauseButton().setVisible(false);
                 } else {
-//                    System.out.println(totalSeekTime);
                     totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
-//                    System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
                     System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
 
                     if (!simulateAll && printSeekTimeOnThisIndex) {
@@ -110,7 +108,7 @@ public class SeekTimeGraph extends JPanel {
 
         g.drawString(String.valueOf(initialPointer), (int) (initialPointer * horizontalStep) + circleSize + margin, margin + 20);
 
-        // Draw arrow from initial pointer to first queue element
+        // Draw circle from initial pointer to first queue element
         int startX = (int) (initialPointer * horizontalStep) + (circleSize / 2) + margin;
         int startY = margin + 25;
         int endX = (int) (queue[0] * horizontalStep) + (circleSize / 2) + margin;
@@ -126,20 +124,12 @@ public class SeekTimeGraph extends JPanel {
             endX = (int) (queue[i + 1] * horizontalStep) + (circleSize / 2) + margin;
             endY = (int) ((i + 3) * verticalStep) + margin;
 
-            // Calculate the center point of the line
-            int centerX = (startX + endX) / 2;
-            int centerY = (startY + endY) / 2;
-
-            // Calculate the angle of the line
-            double angle = Math.atan2(endY - startY, endX - startX);
-
             // Coordinates
-            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize + margin, (int) ((i + 1.5) * verticalStep) + margin);
+            g.drawString(String.valueOf(queue[i]), startX, startY - 5); // Adjust the vertical position of the string
             g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
 
-            // Draw the line and circle
+            // Draw the line
             g.drawLine(startX, startY, endX, endY);
-            g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
         }
         int lastIndex = currentIndex;
         int lastX = (int) (queue[lastIndex] * horizontalStep) + (circleSize / 2) + margin;
