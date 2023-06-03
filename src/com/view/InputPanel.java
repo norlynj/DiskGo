@@ -10,8 +10,11 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 public class InputPanel extends Panel {
     Color bgColor = new Color(248, 241, 226);
@@ -112,6 +115,14 @@ public class InputPanel extends Panel {
         scrollPanes = new JScrollPane[6];
         resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+
+        SeekTimeGraph fcfsGraph = new SeekTimeGraph();
+        SeekTimeGraph sstfGraph = new SeekTimeGraph();
+        SeekTimeGraph scanGraph = new SeekTimeGraph();
+        SeekTimeGraph cscanGraph = new SeekTimeGraph();
+        SeekTimeGraph lookGraph = new SeekTimeGraph();
+        SeekTimeGraph clookGraph = new SeekTimeGraph();
+        
         for (int i = 0; i < graphs.length; i++) {
             graphLabels[i] = new Label(graphTitles[i] + " | Total Seek Time: ");
             graphLabels[i].setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -129,13 +140,14 @@ public class InputPanel extends Panel {
             scrollPanes[i].setBorder(BorderFactory.createEmptyBorder());
         }
         resultsPane = new JScrollPane(resultsPanel);
-        resultsPane.setBorder(BorderFactory.createEmptyBorder());
-        resultsPane.setBounds(70, 340, 1000, 400);
         ScrollBar sbV = new ScrollBar();
-        resultsPane.setVerticalScrollBar(sbV);
         ScrollBar sbH = new ScrollBar();
         sbH.setOrientation(JScrollBar.HORIZONTAL);
+
+        resultsPane.setVerticalScrollBar(sbV);
         resultsPane.setHorizontalScrollBar(sbH);
+        resultsPane.setBorder(BorderFactory.createEmptyBorder());
+        resultsPane.setBounds(70, 340, 1000, 400);
         resultsPanel.setBackground(bgColor);
     }
 

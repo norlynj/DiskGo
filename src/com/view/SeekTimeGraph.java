@@ -42,12 +42,14 @@ public class SeekTimeGraph extends JPanel {
 //                    System.out.println(totalSeekTime);
                     totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
 //                    System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
+                    System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
 
                     if (!simulateAll && printSeekTimeOnThisIndex) {
                         panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
                     }
                     panel.getGraphLabels()[simulatorNumber].setText(panel.getGraphTitles()[simulatorNumber] + " | Total Seek Time: " + totalSeekTime);
                     // Increment the current index
+                    System.out.print("Current index:"+queue[currentIndex]);
                     currentIndex++;
                 }
             }
@@ -133,6 +135,7 @@ public class SeekTimeGraph extends JPanel {
 
             // Coordinates
             g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize + margin, (int) ((i + 1.5) * verticalStep) + margin);
+            g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
 
             // Draw the line and circle
             g.drawLine(startX, startY, endX, endY);
