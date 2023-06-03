@@ -6,7 +6,7 @@ import java.awt.geom.Ellipse2D;
 
 public class CircleSliderUI extends BasicSliderUI {
 
-    private final Color thumbColor = new Color(115, 200, 177);
+    private final Color thumbColor = new Color(104, 104, 141);
 
     public CircleSliderUI(JSlider slider) {
         super(slider);
