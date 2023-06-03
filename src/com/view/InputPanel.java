@@ -244,7 +244,7 @@ public class InputPanel extends Panel {
 
         saveButton.addActionListener(e -> {
             if (validHead && validQueue) {
-                new Export().saveResults(resultsPanel, graphs, graphLabels, requestQueue.getRequestQueue(), requestQueue.getHead());
+                new Export().saveResults(resultsPanel, graphs, graphLabels, graphs[0].getQueue(), requestQueue.getHead());
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet ran", "No results yet", JOptionPane.ERROR_MESSAGE);
             }
