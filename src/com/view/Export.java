@@ -4,10 +4,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import view.component.CustomTable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,11 +16,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Export {
-
-    private void saveResults(JPanel panel) {
+    public void saveResults(JPanel panel, JPanel[] panels, JLabel[] titles) {
         String[] fileFormats = {"PDF", "JPEG"};
         JComboBox<String> formatComboBox = new JComboBox<>(fileFormats);
 
@@ -63,17 +61,16 @@ public class Export {
                         if (!extension.equalsIgnoreCase("pdf")) {
                             file = new File(file.getAbsolutePath() + ".pdf");
                         }
-
-//                        String[] labelStrings = Arrays.stream(titleLabels)
-//                                .map(JLabel::getText)
-//                                .toArray(String[]::new);
-//                        new Export().saveAsPDF(tables, labelStrings, file);
+                        String[] labelStrings = Arrays.stream(titles)
+                                .map(JLabel::getText)
+                                .toArray(String[]::new);
+                        saveAsPDF(panels, labelStrings, file);
                         break;
                     case "JPEG":
                         if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
                             file = new File(file.getAbsolutePath() + ".jpg");
                         }
-                        new Export().saveAsJPEG(panel, file);
+                        saveAsJPEG(panel, file);
                         break;
                     default:
                         break;
@@ -91,41 +88,41 @@ public class Export {
         }
         return extension;
     }
-    public void saveAsPDF(CustomTable[] tables, String[] tableTitles, File file) {
+    public void saveAsPDF(JPanel[] graphs, String[] paneTitles, File file) {
         try {
             PDDocument document = new PDDocument();
             float marginLeft = 30; // Left margin
             float marginRight = 30; // Right margin
 
-            for (int i = 0; i < tables.length; i++) {
-                CustomTable table = tables[i];
-                String tableTitle = tableTitles[i];
+            for (int i = 0; i < graphs.length; i++) {
+                JPanel pane  = graphs[i];
+                String paneTitle = paneTitles[i];
 
 
-                // Create a new page for each table
+                // Create a new page for each pane
                 PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth())); // Set the page orientation to landscape
                 document.addPage(page);
 
-                // Load the table as an image
-                BufferedImage tableImage = new BufferedImage(table.getWidth(), table.getHeight(), BufferedImage.TYPE_INT_RGB);
-                Graphics2D g2d = tableImage.createGraphics();
-                table.print(g2d);
+                // Load the pane as an image
+                BufferedImage paneImage = new BufferedImage(pane.getWidth(), pane.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2d = paneImage.createGraphics();
+                pane.print(g2d);
                 g2d.dispose();
 
                 // Convert the image to PDImageXObject
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(tableImage, "png", baos);
+                ImageIO.write(paneImage, "png", baos);
                 PDImageXObject imageXObject = PDImageXObject.createFromByteArray(document, baos.toByteArray(), "png");
 
                 // Start writing the content to the page
                 PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
-                // Calculate the scaling factor based on the table width and page width
-                float scaleFactor = (page.getMediaBox().getWidth() - marginLeft - marginRight) / (float) tableImage.getWidth();
+                // Calculate the scaling factor based on the pane width and page width
+                float scaleFactor = (page.getMediaBox().getWidth() - marginLeft - marginRight) / (float) paneImage.getWidth();
 
                 // Calculate the adjusted image width and height
-                float adjustedImageWidth = tableImage.getWidth() * scaleFactor;
-                float adjustedImageHeight = tableImage.getHeight() * scaleFactor;
+                float adjustedImageWidth = paneImage.getWidth() * scaleFactor;
+                float adjustedImageHeight = paneImage.getHeight() * scaleFactor;
 
                 // Calculate the position to center the image horizontally
                 float startX = marginLeft + (page.getMediaBox().getWidth() - marginLeft - marginRight - adjustedImageWidth) / 2;
@@ -133,14 +130,14 @@ public class Export {
                 // Calculate the position to place the image vertically
                 float startY = page.getMediaBox().getHeight() - adjustedImageHeight - 80;
 
-                // Draw the table image with adjusted size
+                // Draw the pane image with adjusted size
                 contentStream.drawImage(imageXObject, startX, startY, adjustedImageWidth, adjustedImageHeight);
 
-                // Write the table title
+                // Write the pane title
                 contentStream.beginText();
                 contentStream.setFont(PDType1Font.HELVETICA, 20);
                 contentStream.newLineAtOffset(marginLeft, startY + adjustedImageHeight + 15);
-                contentStream.showText(tableTitle);
+                contentStream.showText(paneTitle);
                 contentStream.endText();
 
                 // Close the content stream
@@ -149,9 +146,9 @@ public class Export {
 
             // Save the PDF file
             document.save(file);
-            JOptionPane.showMessageDialog(null, "Tables saved as PDF successfully.");
+            JOptionPane.showMessageDialog(null, "Graphs saved as PDF successfully.");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error occurred while saving the tables as PDF.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error occurred while saving the graphs as PDF.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

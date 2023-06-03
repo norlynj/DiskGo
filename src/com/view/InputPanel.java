@@ -112,13 +112,6 @@ public class InputPanel extends Panel {
         scrollPanes = new JScrollPane[6];
         resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-
-        SeekTimeGraph fcfsGraph = new SeekTimeGraph();
-        SeekTimeGraph sstfGraph = new SeekTimeGraph();
-        SeekTimeGraph scanGraph = new SeekTimeGraph();
-        SeekTimeGraph cscanGraph = new SeekTimeGraph();
-        SeekTimeGraph lookGraph = new SeekTimeGraph();
-        SeekTimeGraph clookGraph = new SeekTimeGraph();
         
         for (int i = 0; i < graphs.length; i++) {
             graphLabels[i] = new Label(graphTitles[i] + " | Total Seek Time: ");
@@ -257,7 +250,7 @@ public class InputPanel extends Panel {
 
         saveButton.addActionListener(e -> {
             if (validHead && validQueue) {
-                //save the table panels here
+                new Export().saveResults(resultsPanel, graphs, graphLabels);
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet ran", "No results yet", JOptionPane.ERROR_MESSAGE);
             }
