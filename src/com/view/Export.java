@@ -94,14 +94,13 @@ public class Export {
             float marginLeft = 30; // Left margin
             float marginRight = 30; // Right margin
             float marginTop = 80; // Top margin
-
+            float queueLineHeight = 30; // Height of each line in the queue information
 
             // First Page: Queue and Head Information
             PDPage firstPage = new PDPage(new PDRectangle(PDRectangle.LEGAL.getHeight(), PDRectangle.LEGAL.getWidth())); // Set the page orientation to landscape
             document.addPage(firstPage);
             PDPageContentStream firstPageContentStream = new PDPageContentStream(document, firstPage);
 
-            String queueInfo = "Queue: " + Arrays.toString(queue);
             String headInfo = "Head: " + head;
 
             firstPageContentStream.beginText();
@@ -112,12 +111,27 @@ public class Export {
             firstPageContentStream.newLineAtOffset(startX, startY);
             firstPageContentStream.showText("Disk Scheduling Simulator Results");
             firstPageContentStream.newLineAtOffset(0, -50);
-            firstPageContentStream.showText(queueInfo);
+
+            firstPageContentStream.setFont(PDType1Font.HELVETICA, 14);
+            firstPageContentStream.showText("Queue:");
+            firstPageContentStream.newLineAtOffset(0, -queueLineHeight);
+
+            int lineCount = 1;
+            for (int i = 0; i < queue.length; i++) {
+                if (i > 0 && i % 10 == 0) {
+                    lineCount++;
+                    firstPageContentStream.newLineAtOffset(0, -queueLineHeight);
+                }
+                firstPageContentStream.showText(String.valueOf(queue[i]));
+                if (i < queue.length - 1) {
+                    firstPageContentStream.showText(", ");
+                }
+            }
+
             firstPageContentStream.newLineAtOffset(0, -50);
             firstPageContentStream.showText(headInfo);
             firstPageContentStream.endText();
             firstPageContentStream.close();
-
 // Subsequent Pages: Graphs
             for (int i = 0; i < graphs.length; i++) {
                 PDPage page = new PDPage(new PDRectangle(PDRectangle.LEGAL.getHeight(), PDRectangle.LEGAL.getWidth())); // Set the page orientation to landscape
