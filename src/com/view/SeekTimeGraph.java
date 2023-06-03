@@ -19,7 +19,7 @@ public class SeekTimeGraph extends JPanel {
     public SeekTimeGraph() {
     }
 
-    public void simulateGraph(int delay, InputPanel panel) {
+    public void simulateGraph(int delay, InputPanel panel, int simulatorNumber, boolean simulateAll, boolean printSeekTimeOnThisIndex) {
         currentIndex = 0;  // Reset the current index
         timer = new Timer(delay, new ActionListener() {
             long startTime = System.currentTimeMillis();
@@ -39,12 +39,14 @@ public class SeekTimeGraph extends JPanel {
                     panel.getRunButton().setVisible(true);
                     panel.getPauseButton().setVisible(false);
                 } else {
-                    System.out.println(totalSeekTime);
                     totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
-                    System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
-                    panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
 
+                    if (!simulateAll && printSeekTimeOnThisIndex) {
+                        panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
+                    }
+                    panel.getGraphLabels()[simulatorNumber].setText(panel.getGraphTitles()[simulatorNumber] + " | Total Seek Time: " + totalSeekTime);
                     // Increment the current index
+                    System.out.println("Current index for simulator " + simulatorNumber + ": "+queue[currentIndex]);
                     currentIndex++;
                 }
             }
@@ -71,76 +73,71 @@ public class SeekTimeGraph extends JPanel {
         int h = getHeight();
         int w = getWidth();
 
-        float verticalStep = (float) h / (float) (queue.length + 2);
-        float horizontalStep = (float)(w - circleSize) / (float) cylinders;
+        int margin = 30; // Set the margin size
+
+        float verticalStep = (float) (h - 2 * margin) / (float) (queue.length + 2);
+        float horizontalStep = (float) (w - circleSize - 2 * margin) / (float) cylinders;
 
         // Enable anti-aliasing
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g.setColor(bgColor);
+        // Draw "0" and "199" on the line
+        g.drawString("0", margin, margin + 10);
+        g.drawString("199", w - margin - 20, margin + 10);
 
-        g.drawLine(0, 25, w, 25);
+        // Draw the lines below "0" and "199"
+        g.drawLine(margin, margin + 15, margin, margin + 25);
+        g.drawLine(w - margin, margin + 15, w - margin, margin + 25);
 
-        g.drawString(String.valueOf(initialPointer), (int) (initialPointer * horizontalStep) + circleSize, 20);
-        g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), 0, (int) (initialPointer * horizontalStep) + (circleSize / 2), 25);
-
-        for (int i = 0; i < queue.length - 1; i++) {
-            g.drawString(String.valueOf(queue[i]), (int) (queue[i] * horizontalStep) + circleSize, 20);
-            g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2), 0, (int) (queue[i] * horizontalStep) + (circleSize / 2), 25);
+        for (int i = 0; i < queue.length; i++) {
+            // Draw the string above the line
+            FontMetrics fontMetrics = g.getFontMetrics();
+            int stringWidth = fontMetrics.stringWidth(String.valueOf(queue[i]));
+            int stringX = (int) (queue[i] * horizontalStep) + (circleSize / 2) - (stringWidth / 2) + margin;
+            int stringY = margin + 10; // Adjust the vertical position of the string, e.g., 10 pixels above the line
+            if (queue[i] != 0 && queue[i] != 199 ) { // to avoid duplication of printing the string and line
+                g.drawString(String.valueOf(queue[i]), stringX, stringY);
+                g.drawLine((int) (queue[i] * horizontalStep) + (circleSize / 2) + margin, margin + 15, (int) (queue[i] * horizontalStep) + (circleSize / 2) + margin, margin + 25);
+            }
         }
 
         g.setColor(bgColor);
+        g.drawLine(margin, margin + 25, w - margin, margin + 25);
 
-        g.fillOval((int) (initialPointer * horizontalStep), (int) verticalStep - (circleSize / 2), circleSize, circleSize);
-        g.drawLine((int) (initialPointer * horizontalStep) + (circleSize / 2), (int) verticalStep, (int) (queue[0] * horizontalStep)  + (circleSize / 2), (int) (2 * verticalStep));
+        g.drawString(String.valueOf(initialPointer), (int) (initialPointer * horizontalStep) + circleSize + margin, margin + 20);
+
+        // Draw circle from initial pointer to first queue element
+        int startX = (int) (initialPointer * horizontalStep) + (circleSize / 2) + margin;
+        int startY = margin + 25;
+        int endX = (int) (queue[0] * horizontalStep) + (circleSize / 2) + margin;
+        int endY = (int) (2 * verticalStep) + margin;
+
+        g.drawLine(startX, startY, endX, endY);
+        g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
 
         for (int i = 0; i < currentIndex; i++) {
             // Draw only up to the current index
-            int startX = (int) (queue[i] * horizontalStep) + (circleSize / 2);
-            int startY = (int) ((i + 2) * verticalStep);
-            int endX = (int) (queue[i + 1] * horizontalStep) + (circleSize / 2);
-            int endY = (int) ((i + 3) * verticalStep);
+            startX = (int) (queue[i] * horizontalStep) + (circleSize / 2) + margin;
+            startY = (int) ((i + 2) * verticalStep) + margin;
+            endX = (int) (queue[i + 1] * horizontalStep) + (circleSize / 2) + margin;
+            endY = (int) ((i + 3) * verticalStep) + margin;
 
-            drawArrow(g, startX, startY, endX, endY);
+            // Coordinates
+            g.drawString(String.valueOf(queue[i]), startX, startY - 5); // Adjust the vertical position of the string
+            g.fillOval(startX - (circleSize / 2), startY - (circleSize / 2), circleSize, circleSize);
+
+            // Draw the line
+            g.drawLine(startX, startY, endX, endY);
         }
+        int lastIndex = currentIndex;
+        int lastX = (int) (queue[lastIndex] * horizontalStep) + (circleSize / 2) + margin;
+        int lastY = (int) ((lastIndex + 2) * verticalStep) + margin;
+        // Coordinates
+        g.drawString(String.valueOf(queue[lastIndex]), (int) (queue[lastIndex] * horizontalStep) + circleSize + margin, (int) ((lastIndex + 1.5) * verticalStep) + margin);
+        g.fillOval(lastX - (circleSize / 2), lastY - (circleSize / 2), circleSize, circleSize);
     }
 
-    private void drawArrow(Graphics g, int startX, int startY, int endX, int endY) {
-        // Calculate the arrowhead size
-        int arrowSize = 10;
-
-        // Enable anti-aliasing
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Save the original stroke
-        Stroke originalStroke = g2d.getStroke();
-
-        // Draw the line
-        g.drawLine(startX, startY, endX, endY);
-
-        // Calculate the angle of the arrow
-        double angle = Math.atan2(endY - startY, endX - startX);
-
-        // Calculate the coordinates of the arrowhead points
-        int x1 = (int) (endX - arrowSize * Math.cos(angle - Math.PI / 6));
-        int y1 = (int) (endY - arrowSize * Math.sin(angle - Math.PI / 6));
-        int x2 = (int) (endX - arrowSize * Math.cos(angle + Math.PI / 6));
-        int y2 = (int) (endY - arrowSize * Math.sin(angle + Math.PI / 6));
-
-        // Adjust the thickness of the arrow
-        float arrowThickness = 2.0f;
-        g2d.setStroke(new BasicStroke(arrowThickness));
-
-        // Draw the arrowhead
-        g.drawLine(endX, endY, x1, y1);
-        g.drawLine(endX, endY, x2, y2);
-
-        // Restore the original stroke
-        g2d.setStroke(originalStroke);
-
-    }
 
     public int getInitialPointer() {
         return initialPointer;
@@ -158,7 +155,6 @@ public class SeekTimeGraph extends JPanel {
     public void setQueue(int[] queue) {
         this.queue = queue;
         totalSeekTime = Math.abs(initialPointer - queue[0]);
-        repaint();
     }
 
     public int getCylinders() {
