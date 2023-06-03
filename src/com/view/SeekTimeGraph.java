@@ -138,11 +138,6 @@ public class SeekTimeGraph extends JPanel {
         g.fillOval(lastX - (circleSize / 2), lastY - (circleSize / 2), circleSize, circleSize);
     }
 
-
-    public int getInitialPointer() {
-        return initialPointer;
-    }
-
     public void setInitialPointer(int initialPointer) {
         this.initialPointer = initialPointer;
         repaint();
@@ -157,16 +152,7 @@ public class SeekTimeGraph extends JPanel {
         totalSeekTime = Math.abs(initialPointer - queue[0]);
     }
 
-    public int getCylinders() {
-        return cylinders;
-    }
-
     public void setCylinders(int cylinders) {
         this.cylinders = cylinders;
-    }
-
-    @Override
-    public Dimension getMinimumSize() {
-        return new Dimension(200, 100);
     }
 }

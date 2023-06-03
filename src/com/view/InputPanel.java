@@ -10,11 +10,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 public class InputPanel extends Panel {
     Color bgColor = new Color(248, 241, 226);
