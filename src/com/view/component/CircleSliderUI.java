@@ -6,13 +6,10 @@ import java.awt.geom.Ellipse2D;
 
 public class CircleSliderUI extends BasicSliderUI {
 
-    private Color thumbColor = new Color(219, 220, 222);
-    private Color borderColor = Color.black;
+    private final Color thumbColor = new Color(115, 200, 177);
 
     public CircleSliderUI(JSlider slider) {
         super(slider);
-        this.thumbColor = thumbColor;
-        this.borderColor = borderColor;
         slider.setBackground(new Color(231, 205, 194));
         slider.setFocusable(false); // Disable focus painting
 
@@ -23,35 +20,26 @@ public class CircleSliderUI extends BasicSliderUI {
     }
 
     protected Dimension getThumbSize() {
-        return new Dimension(16, 16); // Adjust the size as needed
+        return new Dimension(20, 20); // Adjust the size as needed
     }
 
     @Override
-    public void paintThumb(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        int x = thumbRect.x;
-        int y = thumbRect.y;
-        int width = thumbRect.width;
-        int height = thumbRect.height;
-        int borderSize = 2; // Adjust the border size as needed
-
-        // Draw the border
-        g2d.setColor(borderColor);
-        g2d.fillOval(x - borderSize, y - borderSize, width + borderSize * 2, height + borderSize * 2);
-
-        // Draw the circle thumb
-        g2d.setColor(thumbColor);
-        g2d.fillOval(x, y, width, height);
+    public void paintThumb(Graphics grphcs) {
+        Graphics2D g2 = (Graphics2D) grphcs;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(thumbColor);
+        g2.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
     }
 
     @Override
-    public void paintTrack(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setPaint(Color.GRAY); // Customize track color
-        g2d.setStroke(new BasicStroke(4)); // Customize track thickness
-        g2d.drawLine(trackRect.x, trackRect.y + trackRect.height / 2,
-                trackRect.x + trackRect.width, trackRect.y + trackRect.height / 2);
+    public void paintTrack(Graphics grphcs) {
+        Graphics2D g2 = (Graphics2D) grphcs;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(Color.GRAY);
+        if (slider.getOrientation() == JSlider.VERTICAL) {
+            g2.fillRoundRect(slider.getWidth() / 2 - 2, 2, 4, slider.getHeight(), 1, 1);
+        } else {
+            g2.fillRoundRect(2, slider.getHeight() / 2 - 2, slider.getWidth() - 5, 4, 1, 1);
+        }
     }
 }
