@@ -2,7 +2,8 @@ package model;
 
 public class SSTF extends DiskScheduler{
 
-    public int[] simulate() {
+    @Override
+    public int[] simulate(boolean towardsLargestValue) {
         int[] queue = this.rQ.getRequestQueue();
         int[] res = new int[queue.length];
         int currentPosition = this.rQ.getHead();
