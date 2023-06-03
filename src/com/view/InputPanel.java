@@ -141,12 +141,6 @@ public class InputPanel extends Panel {
         resultsPanel.setBackground(bgColor);
     }
 
-    public void resetTables() {
-
-
-    }
-
-
     private void setListeners() {
         //hover state
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");

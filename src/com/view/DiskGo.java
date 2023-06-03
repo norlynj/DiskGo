@@ -63,7 +63,6 @@ public class DiskGo {
         inputPanel.getMusicOffButton().addActionListener(e -> soundClick());
         inputPanel.getHomeButton().addActionListener(e -> {
             cardLayout.show(contentPane, "menuPanel" );
-            inputPanel.resetTables();
         });
     }
 
