@@ -40,14 +40,13 @@ public class SeekTimeGraph extends JPanel {
                     panel.getPauseButton().setVisible(false);
                 } else {
                     totalSeekTime += Math.abs(queue[currentIndex] - queue[currentIndex+1]);
-                    System.out.println(queue[currentIndex] + "-" + queue[currentIndex+1]);
 
                     if (!simulateAll && printSeekTimeOnThisIndex) {
                         panel.getTotalSeekTimeLabel().setText(String.valueOf(totalSeekTime));
                     }
                     panel.getGraphLabels()[simulatorNumber].setText(panel.getGraphTitles()[simulatorNumber] + " | Total Seek Time: " + totalSeekTime);
                     // Increment the current index
-                    System.out.print("Current index:"+queue[currentIndex]);
+                    System.out.println("Current index for simulator " + simulatorNumber + ": "+queue[currentIndex]);
                     currentIndex++;
                 }
             }
