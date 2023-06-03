@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class CLOOK extends DiskScheduler{
     @Override
-    public int[] simulate() {
+    public int[] simulate(boolean towardsLargerValue) {
         ArrayList<Integer> res = new ArrayList<Integer>();
         int[] queue = this.rQ.getRequestQueue();
         int currentIndex = 0;

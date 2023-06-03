@@ -193,7 +193,7 @@ public class InputPanel extends Panel {
                 }
             }
 
-            //set direction choice only when option is SCAN CSCAN LOOK CLOOK or simulate all
+            //set direction choice only when option is SCAN and LOOK or simulate all
             if ((selectedIndex >= 3 && selectedIndex <= 6) || selectedIndex == 0) {
                 directionChoice.setVisible(true);
             } else {
@@ -235,8 +235,8 @@ public class InputPanel extends Panel {
                     graphs[i].setCylinders(requestQueue.getCylinder());
 
                     int[] queueCopy;
-                    // Consider the to High and to Low options in index 2 - 5 choices
-                    if (i >= 2 && i <= 5) {
+                    // Consider the to High and to Low options in index 2 (SCAN) and 4 (LOOK)
+                    if (i == 2 || i == 4) {
                         boolean towardsLargerVal = directionChoice.getSelectedIndex() == 0;
                         queueCopy = Arrays.copyOf(diskScheduler[i].simulate(towardsLargerVal), diskScheduler[i].simulate(towardsLargerVal).length);
                     } else {
