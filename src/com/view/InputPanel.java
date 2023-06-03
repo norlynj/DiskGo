@@ -239,7 +239,8 @@ public class InputPanel extends Panel {
                 for (int i = 0; i < diskScheduler.length; i++) {
                     graphs[i].setInitialPointer(requestQueue.getHead());
                     graphs[i].setCylinders(requestQueue.getCylinder());
-                    graphs[i].setQueue(diskScheduler[i].simulate());
+                    int[] queueCopy = Arrays.copyOf(diskScheduler[i].simulate(), diskScheduler[i].simulate().length);
+                    graphs[i].setQueue(queueCopy);
                     graphs[i].simulateGraph(slider.getValue(), this, i, selectedIndex == 0, (selectedIndex - 1) == i);
                 }
             } else {
