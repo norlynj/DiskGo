@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class Export {
-    public void saveResults(JPanel panel, JPanel[] panels, JLabel[] titles) {
+    public void saveResults(JPanel panel, JPanel[] panels, JLabel[] titles, int[] queue, int head) {
         String[] fileFormats = {"PDF", "JPEG"};
         JComboBox<String> formatComboBox = new JComboBox<>(fileFormats);
 
@@ -47,7 +47,7 @@ public class Export {
 
             // Generate the file name using the desired format
             String formattedDate = new SimpleDateFormat("MMddyy_HHmmss").format(new Date());
-            String fileName = String.format("%s_PG.%s", formattedDate, defaultExtension);
+            String fileName = String.format("%s_DS.%s", formattedDate, defaultExtension);
             fileChooser.setSelectedFile(new File(fileName));
 
             int option = fileChooser.showSaveDialog(null);
@@ -64,7 +64,7 @@ public class Export {
                         String[] labelStrings = Arrays.stream(titles)
                                 .map(JLabel::getText)
                                 .toArray(String[]::new);
-                        saveAsPDF(panels, labelStrings, file);
+                        saveAsPDF(panels, labelStrings, queue, head, file);
                         break;
                     case "JPEG":
                         if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
@@ -88,20 +88,44 @@ public class Export {
         }
         return extension;
     }
-    public void saveAsPDF(JPanel[] graphs, String[] paneTitles, File file) {
+    public void saveAsPDF(JPanel[] graphs, String[] paneTitles, int[] queue, int head, File file) {
         try {
             PDDocument document = new PDDocument();
             float marginLeft = 30; // Left margin
             float marginRight = 30; // Right margin
+            float marginTop = 80; // Top margin
 
+
+            // First Page: Queue and Head Information
+            PDPage firstPage = new PDPage(new PDRectangle(PDRectangle.LEGAL.getHeight(), PDRectangle.LEGAL.getWidth())); // Set the page orientation to landscape
+            document.addPage(firstPage);
+            PDPageContentStream firstPageContentStream = new PDPageContentStream(document, firstPage);
+
+            String queueInfo = "Queue: " + Arrays.toString(queue);
+            String headInfo = "Head: " + head;
+
+            firstPageContentStream.beginText();
+            firstPageContentStream.setFont(PDType1Font.HELVETICA, 30);
+            float startX = marginLeft;
+            float startY = firstPage.getMediaBox().getHeight() - marginTop;
+
+            firstPageContentStream.newLineAtOffset(startX, startY);
+            firstPageContentStream.showText("Disk Scheduling Simulator Results");
+            firstPageContentStream.newLineAtOffset(0, -50);
+            firstPageContentStream.showText(queueInfo);
+            firstPageContentStream.newLineAtOffset(0, -50);
+            firstPageContentStream.showText(headInfo);
+            firstPageContentStream.endText();
+            firstPageContentStream.close();
+
+// Subsequent Pages: Graphs
             for (int i = 0; i < graphs.length; i++) {
-                JPanel pane  = graphs[i];
-                String paneTitle = paneTitles[i];
-
-
-                // Create a new page for each pane
-                PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth())); // Set the page orientation to landscape
+                PDPage page = new PDPage(new PDRectangle(PDRectangle.LEGAL.getHeight(), PDRectangle.LEGAL.getWidth())); // Set the page orientation to landscape
                 document.addPage(page);
+                PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+                JPanel pane = graphs[i];
+                String paneTitle = paneTitles[i];
 
                 // Load the pane as an image
                 BufferedImage paneImage = new BufferedImage(pane.getWidth(), pane.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -115,42 +139,26 @@ public class Export {
                 PDImageXObject imageXObject = PDImageXObject.createFromByteArray(document, baos.toByteArray(), "png");
 
                 // Start writing the content to the page
-                PDPageContentStream contentStream = new PDPageContentStream(document, page);
-
-                // Calculate the scaling factor based on the pane width and page width
-                float scaleFactor = (page.getMediaBox().getWidth() - marginLeft - marginRight) / (float) paneImage.getWidth();
-
-                // Calculate the adjusted image width and height
-                float adjustedImageWidth = paneImage.getWidth() * scaleFactor;
-                float adjustedImageHeight = paneImage.getHeight() * scaleFactor;
-
-                // Calculate the position to center the image horizontally
-                float startX = marginLeft + (page.getMediaBox().getWidth() - marginLeft - marginRight - adjustedImageWidth) / 2;
-
-                // Calculate the position to place the image vertically
-                float startY = page.getMediaBox().getHeight() - adjustedImageHeight - 80;
-
-                // Draw the pane image with adjusted size
-                contentStream.drawImage(imageXObject, startX, startY, adjustedImageWidth, adjustedImageHeight);
+                contentStream.drawImage(imageXObject, 0, 0, page.getMediaBox().getWidth(), page.getMediaBox().getHeight());
 
                 // Write the pane title
                 contentStream.beginText();
                 contentStream.setFont(PDType1Font.HELVETICA, 20);
-                contentStream.newLineAtOffset(marginLeft, startY + adjustedImageHeight + 15);
+                contentStream.newLineAtOffset((page.getMediaBox().getWidth() - marginLeft - marginRight) / 2, 15);
                 contentStream.showText(paneTitle);
                 contentStream.endText();
 
-                // Close the content stream
                 contentStream.close();
             }
 
-            // Save the PDF file
             document.save(file);
+            document.close();
             JOptionPane.showMessageDialog(null, "Graphs saved as PDF successfully.");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error occurred while saving the graphs as PDF.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
 
     public void saveAsJPEG(JPanel panel, File file) {
