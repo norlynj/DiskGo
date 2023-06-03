@@ -9,16 +9,8 @@ import view.component.Panel;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class InputPanel extends Panel {
@@ -147,13 +139,6 @@ public class InputPanel extends Panel {
         resultsPanel.setBackground(bgColor);
     }
 
-
-    private void showAllTables() {
-
-
-
-    }
-
     public void resetTables() {
 
 
@@ -181,72 +166,31 @@ public class InputPanel extends Panel {
             // Handle music off button click
         });
 
+        // associate each algo with its corresponding index and make the pane and label visible accordingly
+        Map<String, Integer> algorithmMap = new HashMap<>();
+        algorithmMap.put("Simulate all", 0);
+        algorithmMap.put("FCFS", 1);
+        algorithmMap.put("SSTF", 2);
+        algorithmMap.put("SCAN", 3);
+        algorithmMap.put("C-SCAN", 4);
+        algorithmMap.put("LOOK", 5);
+        algorithmMap.put("C-LOOK", 6);
+
         algorithmChoice.addActionListener(e -> {
-            String s = (String) Objects.requireNonNull(algorithmChoice.getSelectedItem());
-            switch (s) {
-                case "Simulate all" -> {
-                    for (int i = 0; i < graphs.length; i++) {
-                        diskScheduler[i].setRequestQueue(requestQueue);
-                        scrollPanes[i].setVisible(true);
-                        graphLabels[i].setVisible(true);
-                    }
+            String selectedAlgorithm = (String) Objects.requireNonNull(algorithmChoice.getSelectedItem());
+            int selectedIndex = algorithmMap.getOrDefault(selectedAlgorithm, -1);
+
+            for (int i = 0; i < graphs.length; i++) {
+                if (selectedIndex == 0) {
+                    totalSeekTimeLabel.setText("");
+                    scrollPanes[i].setVisible(true);
+                    graphLabels[i].setVisible(true);
+                } else {
+                    scrollPanes[i].setVisible(i == (selectedIndex - 1));
+                    graphLabels[i].setVisible(false);
                 }
-                case "FCFS" -> {
-                    scrollPanes[0].setVisible(true);
-                    graphLabels[0].setVisible(false);
-                    diskScheduler[0].setRequestQueue(requestQueue);
-                    for (int i = 1; i < scrollPanes.length; i++) {
-                        scrollPanes[i].setVisible(false);
-                        graphLabels[i].setVisible(false);
-                    }
-                }
-                case "SSTF" -> {
-                    scrollPanes[1].setVisible(true);
-                    diskScheduler[1].setRequestQueue(requestQueue);
-                    for (int i = 0; i < scrollPanes.length; i++) {
-                        if (i != 1) {
-                            scrollPanes[i].setVisible(false);
-                        }
-                        graphLabels[i].setVisible(false);
-                    }
-                }
-                case "SCAN" -> {
-                    scrollPanes[2].setVisible(true);
-                    diskScheduler[2].setRequestQueue(requestQueue);
-                    for (int i = 0; i < graphs.length; i++) {
-                        if (i != 2) {
-                            scrollPanes[i].setVisible(false);
-                        }
-                        graphLabels[i].setVisible(false);
-                    }
-                }
-                case "C-SCAN" -> {
-                    scrollPanes[3].setVisible(true);
-                    diskScheduler[3].setRequestQueue(requestQueue);
-                    for (int i = 0; i < scrollPanes.length; i++) {
-                        if (i != 3) {
-                            scrollPanes[i].setVisible(false);
-                        }
-                        graphLabels[i].setVisible(false);
-                    }
-                }
-                case "LOOK" -> {
-                    scrollPanes[4].setVisible(true);
-                    diskScheduler[4].setRequestQueue(requestQueue);
-                    for (int i = 0; i < scrollPanes.length; i++) {
-                        if (i != 4) {
-                            scrollPanes[i].setVisible(false);
-                        }
-                        graphLabels[i].setVisible(false);
-                    }
-                }
-                case "C-LOOK" -> {
-                    scrollPanes[5].setVisible(true);
-                    graphLabels[5].setVisible(false);
-                    for (int i = 0; i < scrollPanes.length - 1; i++) {
-                        scrollPanes[i].setVisible(false);
-                        graphLabels[i].setVisible(false);
-                    }
+                if (diskScheduler[i] != null) {
+                    diskScheduler[i].setRequestQueue(requestQueue);
                 }
             }
         });
@@ -275,6 +219,8 @@ public class InputPanel extends Panel {
         });
 
         runButton.addActionListener(e -> {
+            int selectedIndex = algorithmChoice.getSelectedIndex();
+
             if (validHead && validQueue) {
                 pauseButton.setVisible(true);
                 runButton.setVisible(false);
@@ -282,10 +228,8 @@ public class InputPanel extends Panel {
                     graphs[i].setInitialPointer(requestQueue.getHead());
                     graphs[i].setCylinders(requestQueue.getCylinder());
                     graphs[i].setQueue(diskScheduler[i].simulate());
-                    graphs[i].simulateGraph(slider.getValue(), this, i, algorithmChoice.getSelectedItem().equals("Simulate all"));
+                    graphs[i].simulateGraph(slider.getValue(), this, i, selectedIndex == 0, (selectedIndex - 1) == i);
                 }
-
-
             } else {
                 JOptionPane.showMessageDialog(null, "Cannot run the program. Input is invalid.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
@@ -430,7 +374,6 @@ public class InputPanel extends Panel {
     private void simulate() {
 
     }
-
 
     public static void main(String[] args) {
 
