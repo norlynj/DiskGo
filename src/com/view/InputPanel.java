@@ -68,7 +68,7 @@ public class InputPanel extends Panel {
         directionChoice = new CustomDropDown(new String[]{"to high", "to low"});
         algorithmChoice.setBounds(218, 133, 150, 44);
         directionChoice.setBounds(370, 133, 120, 44);
-        directionChoice.setToolTipText("Direction for SCAN, CSCAN, LOOK, CLOOK Algorithm");
+        directionChoice.setToolTipText("Direction for SCAN and LOOK Algorithms");
     }
 
     private void initializeTextFields() {
@@ -194,7 +194,7 @@ public class InputPanel extends Panel {
             }
 
             //set direction choice only when option is SCAN and LOOK or simulate all
-            if ((selectedIndex >= 3 && selectedIndex <= 6) || selectedIndex == 0) {
+            if (selectedIndex == 2 || selectedIndex == 4 || selectedIndex == 0) {
                 directionChoice.setVisible(true);
             } else {
                 directionChoice.setVisible(false);
