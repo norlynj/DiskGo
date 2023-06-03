@@ -16,7 +16,7 @@ import java.util.*;
 public class InputPanel extends Panel {
     Color bgColor = new Color(248, 241, 226);
     private ImageButton musicOnButton, musicOffButton, homeButton;
-    private CustomDropDown algorithmChoice;
+    private CustomDropDown algorithmChoice, directionChoice;
     private ImageButton importButton, randomizeButton, runButton, pauseButton, saveButton;
     private JTextField requestQueueField, headField;
     private JSlider slider;
@@ -65,7 +65,10 @@ public class InputPanel extends Panel {
 
     private void initializeAlgorithmComboBox() {
         algorithmChoice = new CustomDropDown(new String[]{"Simulate all", "FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"});
+        directionChoice = new CustomDropDown(new String[]{"to high", "to low"});
         algorithmChoice.setBounds(218, 133, 150, 44);
+        directionChoice.setBounds(370, 133, 120, 44);
+        directionChoice.setToolTipText("Direction for SCAN, CSCAN, LOOK, CLOOK Algorithm");
     }
 
     private void initializeTextFields() {
@@ -188,6 +191,13 @@ public class InputPanel extends Panel {
                 if (diskScheduler[i] != null) {
                     diskScheduler[i].setRequestQueue(requestQueue);
                 }
+            }
+
+            //set direction choice only when option is SCAN CSCAN LOOK CLOOK or simulate all
+            if ((selectedIndex >= 3 && selectedIndex <= 6) || selectedIndex == 0) {
+                directionChoice.setVisible(true);
+            } else {
+                directionChoice.setVisible(false);
             }
         });
 
@@ -357,6 +367,7 @@ public class InputPanel extends Panel {
         this.add(requestQueueField);
         this.add(headField);
         this.add(algorithmChoice);
+        this.add(directionChoice);
         this.add(importButton);
         this.add(randomizeButton);
         this.add(runButton);
