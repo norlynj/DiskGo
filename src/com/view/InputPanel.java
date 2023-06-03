@@ -278,14 +278,11 @@ public class InputPanel extends Panel {
             if (validHead && validQueue) {
                 pauseButton.setVisible(true);
                 runButton.setVisible(false);
-                for (int i = 0; i < graphTitles.length; i++) {
+                for (int i = 0; i < diskScheduler.length; i++) {
                     graphs[i].setInitialPointer(requestQueue.getHead());
                     graphs[i].setCylinders(requestQueue.getCylinder());
                     graphs[i].setQueue(diskScheduler[i].simulate());
                     graphs[i].simulateGraph(slider.getValue(), this, i, algorithmChoice.getSelectedItem().equals("Simulate all"));
-                    if (!graphs[i].timer.isRunning()) {
-
-                    }
                 }
 
 
