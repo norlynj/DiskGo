@@ -79,6 +79,19 @@ public class CustomDropDown extends JComboBox<String> {
         }
 
         @Override
+        public void show() {
+            setBackground(highlightColor);
+            super.show();
+        }
+
+        @Override
+        public void hide() {
+            setBackground(backgroundColor);
+            super.hide();
+        }
+
+
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
