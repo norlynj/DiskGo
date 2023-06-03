@@ -46,7 +46,6 @@ public class SeekTimeGraph extends JPanel {
                     }
                     panel.getGraphLabels()[simulatorNumber].setText(panel.getGraphTitles()[simulatorNumber] + " | Total Seek Time: " + totalSeekTime);
                     // Increment the current index
-                    System.out.println("Current index for simulator " + simulatorNumber + ": "+queue[currentIndex]);
                     currentIndex++;
                 }
             }
