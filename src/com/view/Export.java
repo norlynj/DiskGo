@@ -132,7 +132,8 @@ public class Export {
             firstPageContentStream.showText(headInfo);
             firstPageContentStream.endText();
             firstPageContentStream.close();
-// Subsequent Pages: Graphs
+
+            // Subsequent Pages: Graphs
             for (int i = 0; i < graphs.length; i++) {
                 PDPage page = new PDPage(new PDRectangle(PDRectangle.LEGAL.getHeight(), PDRectangle.LEGAL.getWidth())); // Set the page orientation to landscape
                 document.addPage(page);
@@ -186,5 +187,6 @@ public class Export {
         } catch (IOException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error occurred while saving image.", "Error", JOptionPane.ERROR_MESSAGE);
-        }    }
+        }
+    }
 }
