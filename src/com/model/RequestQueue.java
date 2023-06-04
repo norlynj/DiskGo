@@ -34,7 +34,7 @@ public class RequestQueue {
 
     public int[] randomizeQueue() {
 
-        int size = random.nextInt(41); // Generate random size between 0 and 40
+        int size = random.nextInt(40) + 1; // Generate random size between 0 and 40
 
         int[] queue = new int[size];
         for (int i = 0; i < size; i++) {

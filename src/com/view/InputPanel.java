@@ -293,7 +293,7 @@ public class InputPanel extends Panel {
                     String str = input.getText();
                     if (input.getName().equals("headField")) {
                         int value = Integer.parseInt(str);
-                        if (value < 0 || value > requestQueue.getCylinder() - 1) {
+                        if (value < 0 || value > requestQueue.getCylinder()) {
                             // If the value is out of range, highlight the text field
                             invalidate(true);
                         } else {
@@ -316,7 +316,7 @@ public class InputPanel extends Panel {
                                     String num = nums[i];
                                     int value = Integer.parseInt(num);
                                     // Check that each integer value in the input is between 0 and 199
-                                    if (value < 0 || value > requestQueue.getCylinder() - 1) {
+                                    if (value < 0 || value > requestQueue.getCylinder()) {
                                         invalidate(false);
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
