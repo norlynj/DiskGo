@@ -326,6 +326,7 @@ public class InputPanel extends Panel {
                                         invalidate(false);
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
+                                        validQueue = true;
                                         numList[i] = value;
                                     }
                                 }
