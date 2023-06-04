@@ -242,7 +242,13 @@ public class InputPanel extends Panel {
                     } else {
                         queueCopy = Arrays.copyOf(diskScheduler[i].simulate(false), diskScheduler[i].simulate(false).length);
                     }
-                    graphs[i].setQueue(queueCopy);
+                    // work around for queue reordering bug on fcfs
+                    if (graphs[i].getQueue() != null && i == 0){
+                        graphs[i].setQueue(graphs[i].getQueue());
+                    } else {
+                        graphs[i].setQueue(queueCopy);
+                    }
+
                     graphs[i].simulateGraph(slider.getValue(), this, i, selectedIndex == 0, (selectedIndex - 1) == i);
                 }
             } else {
