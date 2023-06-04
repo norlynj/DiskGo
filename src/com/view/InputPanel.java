@@ -267,59 +267,60 @@ public class InputPanel extends Panel {
                 JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet ran", "No results yet", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        inputValidator(requestQueueField);
-        inputValidator(headField);
+        inputValidator();
     }
 
-    private void inputValidator(JTextField input) {
-        input.getDocument().addDocumentListener(new DocumentListener() {
+    private void inputValidator() {
+        DocumentListener documentListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                validateInput();
+                validateInput(e);
                 adjustPaneSize();
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
-                validateInput();
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                validateInput();
+                validateInput(e);
             }
 
-            private void validateInput() {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                validateInput(e);
+            }
+
+            private void validateInput(DocumentEvent e) {
+                JTextField textField = (JTextField) e.getDocument().getProperty("owner");
                 try {
-                    String str = input.getText();
-                    if (input.getName().equals("headField")) {
+                    String str = textField.getText();
+                    if (textField.getName().equals("headField")) {
                         int value = Integer.parseInt(str);
                         if (value < 0 || value > requestQueue.getCylinder()) {
                             // If the value is out of range, highlight the text field
-                            invalidate(true);
+                            invalidate(textField);
                         } else {
-                            input.setBackground(UIManager.getColor("TextField.background"));
+                            textField.setBackground(UIManager.getColor("TextField.background"));
                             requestQueue.setHead(value);
                             validHead = true;
                         }
-                    } else if(input.getName().equals("requestQueueField")) {
-                        // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 0-40, string value must be between 0-199
+                    } else if (textField.getName().equals("requestQueueField")) {
+                        // check 3 things here: textField is a comma-separated list of integers with a space after each comma, length must be between 0-40, string value must be between 0-199
                         if (str.matches("\\d+(,\\s\\d+)*")) {
                             String[] parts = str.split(",\\s");
                             if (parts.length >= 0 &&
                                     parts.length <= 40 &&
                                     parts[0].matches("\\d+") &&
-                                    parts[parts.length-1].matches("\\d+")) {
-                                // Split the input into an array of integers
+                                    parts[parts.length - 1].matches("\\d+")) {
+                                // Split the textField into an array of integers
                                 String[] nums = str.split(",\\s");
                                 int[] numList = new int[nums.length];
                                 for (int i = 0; i < nums.length; i++) {
                                     String num = nums[i];
                                     int value = Integer.parseInt(num);
-                                    // Check that each integer value in the input is between 0 and 199
+                                    // Check that each integer value in the textField is between 0 and 199
                                     if (value < 0 || value > requestQueue.getCylinder()) {
-                                        invalidate(false);
+                                        invalidate(textField);
                                     } else {
-                                        input.setBackground(UIManager.getColor("TextField.background"));
+                                        textField.setBackground(UIManager.getColor("TextField.background"));
                                         validQueue = true;
                                         numList[i] = value;
                                     }
@@ -327,27 +328,28 @@ public class InputPanel extends Panel {
                                 requestQueue.setRequestQueue(numList);
                                 validQueue = true;
                             } else {
-                                invalidate(false);
+                                invalidate(textField);
                             }
                         } else {
-                            invalidate(false);
+                            invalidate(textField);
                         }
                     }
                 } catch (NumberFormatException ex) {
-                    invalidate(false);
+                    invalidate(textField);
                 }
             }
-            private void invalidate(boolean head) {
-                input.setBackground(new Color(255, 202, 202));
-                if (head) {
+
+            private void invalidate(JTextField textField) {
+                textField.setBackground(new Color(255, 202, 202));
+                if (textField.getName().equals("headField")) {
                     validHead = false;
-                } else {
+                } else if (textField.getName().equals("requestQueueField")) {
                     validQueue = false;
                 }
             }
 
             private void adjustPaneSize() {
-                for (int i = 0; i < scrollPanes.length; i++){
+                for (int i = 0; i < scrollPanes.length; i++) {
                     if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 10) {
                         scrollPanes[i].setPreferredSize(new Dimension(800, 385));
                     } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 20) {
@@ -359,8 +361,15 @@ public class InputPanel extends Panel {
                     }
                 }
             }
-        });
+        };
+
+        headField.getDocument().putProperty("owner", headField);
+        headField.getDocument().addDocumentListener(documentListener);
+
+        requestQueueField.getDocument().putProperty("owner", requestQueueField);
+        requestQueueField.getDocument().addDocumentListener(documentListener);
     }
+
 
     private void initializeSlider() {
         // slider and timer
