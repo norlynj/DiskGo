@@ -7,7 +7,7 @@ public class LOOK extends DiskScheduler{
     @Override
     public int[] simulate(boolean towardsLargerValue) {
         ArrayList<Integer> res = new ArrayList<Integer>();
-        int[] queue = this.rQ.getRequestQueue();
+        int[] queue = Arrays.copyOf(this.rQ.getRequestQueue(), this.rQ.getRequestQueue().length);
         int currentIndex = 0;
         Arrays.sort(queue);
         for (int i : queue) {

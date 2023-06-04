@@ -1,10 +1,12 @@
 package model;
 
+import java.util.Arrays;
+
 public class SSTF extends DiskScheduler{
 
     @Override
     public int[] simulate(boolean towardsLargestValue) {
-        int[] queue = this.rQ.getRequestQueue();
+        int[] queue = Arrays.copyOf(this.rQ.getRequestQueue(), this.rQ.getRequestQueue().length);
         int[] res = new int[queue.length];
         int currentPosition = this.rQ.getHead();
         for (int i = 0; i < this.rQ.getRequestQueue().length; i++){

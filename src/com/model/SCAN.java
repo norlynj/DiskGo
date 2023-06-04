@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class SCAN extends DiskScheduler{
     @Override
     public int[] simulate(boolean towardsLargerValue) {
-        int[] queue = this.rQ.getRequestQueue();
+        int[] queue = Arrays.copyOf(this.rQ.getRequestQueue(), this.rQ.getRequestQueue().length);
         ArrayList<Integer> res = new ArrayList<Integer>();
         int currentIndex = 0;
         Arrays.sort(queue);
