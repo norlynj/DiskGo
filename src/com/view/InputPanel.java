@@ -194,7 +194,7 @@ public class InputPanel extends Panel {
             }
 
             //set direction choice only when option is SCAN and LOOK or simulate all
-            if (selectedIndex == 2 || selectedIndex == 4 || selectedIndex == 0) {
+            if (selectedIndex == 0 || selectedIndex == 3 || selectedIndex == 5) {
                 directionChoice.setVisible(true);
             } else {
                 directionChoice.setVisible(false);
