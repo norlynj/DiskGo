@@ -16,7 +16,7 @@ import java.util.*;
 public class InputPanel extends Panel {
     Color bgColor = new Color(248, 241, 226);
     private ImageButton musicOnButton, musicOffButton, homeButton;
-    private CustomDropDown algorithmChoice;
+    private CustomDropDown algorithmChoice, directionChoice;
     private ImageButton importButton, randomizeButton, runButton, pauseButton, saveButton;
     private JTextField requestQueueField, headField;
     private JSlider slider;
@@ -65,7 +65,10 @@ public class InputPanel extends Panel {
 
     private void initializeAlgorithmComboBox() {
         algorithmChoice = new CustomDropDown(new String[]{"Simulate all", "FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"});
+        directionChoice = new CustomDropDown(new String[]{"to high", "to low"});
         algorithmChoice.setBounds(218, 133, 150, 44);
+        directionChoice.setBounds(370, 133, 120, 44);
+        directionChoice.setToolTipText("Direction for SCAN and LOOK Algorithms");
     }
 
     private void initializeTextFields() {
@@ -189,6 +192,13 @@ public class InputPanel extends Panel {
                     diskScheduler[i].setRequestQueue(requestQueue);
                 }
             }
+
+            //set direction choice only when option is SCAN and LOOK or simulate all
+            if (selectedIndex == 0 || selectedIndex == 3 || selectedIndex == 5) {
+                directionChoice.setVisible(true);
+            } else {
+                directionChoice.setVisible(false);
+            }
         });
 
         importButton.addActionListener(e -> {
@@ -223,7 +233,15 @@ public class InputPanel extends Panel {
                 for (int i = 0; i < diskScheduler.length; i++) {
                     graphs[i].setInitialPointer(requestQueue.getHead());
                     graphs[i].setCylinders(requestQueue.getCylinder());
-                    int[] queueCopy = Arrays.copyOf(diskScheduler[i].simulate(), diskScheduler[i].simulate().length);
+
+                    int[] queueCopy;
+                    // Consider the to High and to Low options in index 2 (SCAN) and 4 (LOOK)
+                    if (i == 2 || i == 4) {
+                        boolean towardsLargerVal = directionChoice.getSelectedIndex() == 0;
+                        queueCopy = diskScheduler[i].simulate(towardsLargerVal);
+                    } else {
+                        queueCopy = diskScheduler[i].simulate(false);
+                    }
                     graphs[i].setQueue(queueCopy);
                     graphs[i].simulateGraph(slider.getValue(), this, i, selectedIndex == 0, (selectedIndex - 1) == i);
                 }
@@ -244,91 +262,115 @@ public class InputPanel extends Panel {
 
         saveButton.addActionListener(e -> {
             if (validHead && validQueue) {
+                boolean[] scrollPaneVisibility = new boolean[scrollPanes.length];
+                boolean[] graphLabelVisibility = new boolean[graphLabels.length];
+
+                // Store the original visibility state
+                for (int i = 0; i < scrollPanes.length; i++) {
+                    scrollPaneVisibility[i] = scrollPanes[i].isVisible();
+                    graphLabelVisibility[i] = graphLabels[i].isVisible();
+                }
+
+                // Make all scrollPanes and graphLabels visible
+                for (int i = 0; i < scrollPanes.length; i++) {
+                    scrollPanes[i].setVisible(true);
+                    graphLabels[i].setVisible(true);
+                }
+
                 new Export().saveResults(resultsPanel, graphs, graphLabels, graphs[0].getQueue(), requestQueue.getHead());
+
+                // Restore visibility of scrollPanes and graphLabels
+                for (int i = 0; i < scrollPanes.length; i++) {
+                    scrollPanes[i].setVisible(scrollPaneVisibility[i]);
+                    graphLabels[i].setVisible(graphLabelVisibility[i]);
+                }
             } else {
-                JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet ran", "No results yet", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet run", "No results yet", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        inputValidator(requestQueueField);
-        inputValidator(headField);
+        inputValidator();
     }
 
-    private void inputValidator(JTextField input) {
-        input.getDocument().addDocumentListener(new DocumentListener() {
+    private void inputValidator() {
+        DocumentListener documentListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                validateInput();
+                validateInput(e);
                 adjustPaneSize();
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
-                validateInput();
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                validateInput();
+                validateInput(e);
             }
 
-            private void validateInput() {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                validateInput(e);
+            }
+
+            private void validateInput(DocumentEvent e) {
+                JTextField textField = (JTextField) e.getDocument().getProperty("owner");
                 try {
-                    String str = input.getText();
-                    if (input.getName().equals("headField")) {
+                    String str = textField.getText();
+                    if (textField.getName().equals("headField")) {
                         int value = Integer.parseInt(str);
-                        if (value < 0 || value > requestQueue.getCylinder() - 1) {
+                        if (value < 0 || value > requestQueue.getCylinder()) {
                             // If the value is out of range, highlight the text field
-                            invalidate(true);
+                            invalidate(textField);
                         } else {
-                            input.setBackground(UIManager.getColor("TextField.background"));
+                            textField.setBackground(UIManager.getColor("TextField.background"));
                             requestQueue.setHead(value);
                             validHead = true;
                         }
-                    } else if(input.getName().equals("requestQueueField")) {
-                        // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 0-40, string value must be between 0-199
+                    } else if (textField.getName().equals("requestQueueField")) {
+                        // check 3 things here: textField is a comma-separated list of integers with a space after each comma, length must be between 0-40, string value must be between 0-199
                         if (str.matches("\\d+(,\\s\\d+)*")) {
                             String[] parts = str.split(",\\s");
                             if (parts.length >= 0 &&
                                     parts.length <= 40 &&
                                     parts[0].matches("\\d+") &&
-                                    parts[parts.length-1].matches("\\d+")) {
-                                // Split the input into an array of integers
+                                    parts[parts.length - 1].matches("\\d+")) {
+                                // Split the textField into an array of integers
                                 String[] nums = str.split(",\\s");
                                 int[] numList = new int[nums.length];
                                 for (int i = 0; i < nums.length; i++) {
                                     String num = nums[i];
                                     int value = Integer.parseInt(num);
-                                    // Check that each integer value in the input is between 0 and 199
-                                    if (value < 0 || value > requestQueue.getCylinder() - 1) {
-                                        invalidate(false);
+                                    // Check that each integer value in the textField is between 0 and 199
+                                    if (value < 0 || value > requestQueue.getCylinder()) {
+                                        invalidate(textField);
                                     } else {
-                                        input.setBackground(UIManager.getColor("TextField.background"));
+                                        textField.setBackground(UIManager.getColor("TextField.background"));
+                                        validQueue = true;
                                         numList[i] = value;
                                     }
                                 }
                                 requestQueue.setRequestQueue(numList);
                                 validQueue = true;
                             } else {
-                                invalidate(false);
+                                invalidate(textField);
                             }
                         } else {
-                            invalidate(false);
+                            invalidate(textField);
                         }
                     }
                 } catch (NumberFormatException ex) {
-                    invalidate(false);
+                    invalidate(textField);
                 }
             }
-            private void invalidate(boolean head) {
-                input.setBackground(new Color(255, 202, 202));
-                if (head) {
+
+            private void invalidate(JTextField textField) {
+                textField.setBackground(new Color(255, 202, 202));
+                if (textField.getName().equals("headField")) {
                     validHead = false;
-                } else {
+                } else if (textField.getName().equals("requestQueueField")) {
                     validQueue = false;
                 }
             }
 
             private void adjustPaneSize() {
-                for (int i = 0; i < scrollPanes.length; i++){
+                for (int i = 0; i < scrollPanes.length; i++) {
                     if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 10) {
                         scrollPanes[i].setPreferredSize(new Dimension(800, 385));
                     } else if (requestQueue.getRequestQueue() != null && requestQueue.getRequestQueue().length <= 20) {
@@ -340,8 +382,15 @@ public class InputPanel extends Panel {
                     }
                 }
             }
-        });
+        };
+
+        headField.getDocument().putProperty("owner", headField);
+        headField.getDocument().addDocumentListener(documentListener);
+
+        requestQueueField.getDocument().putProperty("owner", requestQueueField);
+        requestQueueField.getDocument().addDocumentListener(documentListener);
     }
+
 
     private void initializeSlider() {
         // slider and timer
@@ -357,6 +406,7 @@ public class InputPanel extends Panel {
         this.add(requestQueueField);
         this.add(headField);
         this.add(algorithmChoice);
+        this.add(directionChoice);
         this.add(importButton);
         this.add(randomizeButton);
         this.add(runButton);

@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 public class CSCAN extends DiskScheduler{
     @Override
-    public int[] simulate() {
-        int[] queue = this.rQ.getRequestQueue();
+    public int[] simulate(boolean towardsLargerValue) {
+        int[] queue = Arrays.copyOf(this.rQ.getRequestQueue(), this.rQ.getRequestQueue().length);
         ArrayList<Integer> res = new ArrayList<Integer>();
         int currentIndex = 0;
         Arrays.sort(queue);

@@ -11,7 +11,7 @@ public abstract class DiskScheduler {
         this.rQ = rq;
     }
 
-    public int[] simulate() {
+    public int[] simulate(boolean towardsLargerValue) {
         return this.rQ.getRequestQueue();
     }
 
