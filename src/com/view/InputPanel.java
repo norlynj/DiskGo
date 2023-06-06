@@ -262,9 +262,30 @@ public class InputPanel extends Panel {
 
         saveButton.addActionListener(e -> {
             if (validHead && validQueue) {
+                boolean[] scrollPaneVisibility = new boolean[scrollPanes.length];
+                boolean[] graphLabelVisibility = new boolean[graphLabels.length];
+
+                // Store the original visibility state
+                for (int i = 0; i < scrollPanes.length; i++) {
+                    scrollPaneVisibility[i] = scrollPanes[i].isVisible();
+                    graphLabelVisibility[i] = graphLabels[i].isVisible();
+                }
+
+                // Make all scrollPanes and graphLabels visible
+                for (int i = 0; i < scrollPanes.length; i++) {
+                    scrollPanes[i].setVisible(true);
+                    graphLabels[i].setVisible(true);
+                }
+
                 new Export().saveResults(resultsPanel, graphs, graphLabels, graphs[0].getQueue(), requestQueue.getHead());
+
+                // Restore visibility of scrollPanes and graphLabels
+                for (int i = 0; i < scrollPanes.length; i++) {
+                    scrollPanes[i].setVisible(scrollPaneVisibility[i]);
+                    graphLabels[i].setVisible(graphLabelVisibility[i]);
+                }
             } else {
-                JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet ran", "No results yet", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cannot save the results since the program is not yet run", "No results yet", JOptionPane.ERROR_MESSAGE);
             }
         });
         inputValidator();
