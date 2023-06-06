@@ -111,24 +111,55 @@ public class CustomDropDown extends JComboBox<String> {
         }
     }
 
-    private class ArrowButton extends BasicArrowButton {
+    private class ArrowButton extends JButton {
+        private static final int BUTTON_SIZE = 16;
+
         public ArrowButton(int direction) {
-            super(direction, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);
+            setPreferredSize(new Dimension(BUTTON_SIZE, BUTTON_SIZE));
+            setOpaque(false);
+            setContentAreaFilled(false);
+            setFocusPainted(false);
+            setBorder(BorderFactory.createEmptyBorder());
+            setIcon(new ArrowIcon(direction, Color.WHITE, BUTTON_SIZE - 4));
+        }
+    }
+
+    private class ArrowIcon implements Icon {
+        private static final int ARROW_SIZE = 8;
+
+        private final int direction;
+        private final Color color;
+        private final int size;
+
+        public ArrowIcon(int direction, Color color, int size) {
+            this.direction = direction;
+            this.color = color;
+            this.size = size;
         }
 
         @Override
-        public void paint(Graphics g) {
-            // Override the paint method to draw the arrow without a background
-            Dimension size = getSize();
+        public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(Color.WHITE);
-            int x = (size.width - 4) / 2;
-            int y = (size.height - 8) / 2;
-            int w = 10;
-            int h = 10;
-            g2d.fillPolygon(new int[]{x, x + w, x + (w / 2)}, new int[]{y, y, y + h}, 3);
+
+            g2d.setColor(color);
+            g2d.setStroke(new BasicStroke(2));
+
+            int midPoint = size / 2;
+
+            g2d.drawLine(x + midPoint, y + ARROW_SIZE, x, y);
+            g2d.drawLine(x + midPoint, y + ARROW_SIZE, x + size, y);
             g2d.dispose();
+        }
+
+        @Override
+        public int getIconWidth() {
+            return size;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return size;
         }
     }
 }
