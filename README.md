@@ -1,6 +1,9 @@
 CMSC 125 Disk Scheduling Simulator
 - program name: DiskGo
-- developers: Norlyn Jane Castillo, Charissa Mae Madriaga, Jannah Esplanada
+- developers:
+    - Norlyn Jane Castillo
+    - Charissa Mae Madriaga
+    - Jannah Esplanada
 
 ## 🛠️ How to compile and run the source code
 
@@ -37,4 +40,8 @@ For Windows:
 java -cp ".;lib/pdfbox.jar" Main
 ```
 
-Note: there are test cases under the resources/text directory that corresponds to the examples in the docx file
+
+
+## Demo
+
+[Screencast from Thursday, 06 July, 2023 09:34:58 PM PST.webm](https://github.com/norlynj/DiskGo/assets/80614435/17953253-30e6-4d92-9db8-d5beb8dc90b7)
