@@ -43,5 +43,5 @@ java -cp ".;lib/pdfbox.jar" Main
 
 
 ## Demo
+[Screencast from Saturday, 03 June, 2023 05:36:09 PM PST.webm](https://github.com/norlynj/DiskGo/assets/80614435/9de11a8c-baeb-46e7-937f-c8ce1b32c051)
 
-[Screencast from Thursday, 06 July, 2023 09:34:58 PM PST.webm](https://github.com/norlynj/DiskGo/assets/80614435/17953253-30e6-4d92-9db8-d5beb8dc90b7)
